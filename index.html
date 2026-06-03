@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PAAV — Punto de Asesoramiento y Acompañamiento Vecinal</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --rojo: #C4123F;
+  --amarillo: #F4B915;
+  --verde: #1E9E6A;
+  --teal: #1B8FA6;
+  --papel: #F7F4EC;
+  --tinta: #1A1A1A;
+  --gris: #6b6b6b;
+  --borde: #ddd;
+  --blanco: #fff;
+}
+body { font-family: Arial, sans-serif; background: var(--papel); color: var(--tinta); font-size: 14px; }
+
+/* LOGIN */
+#login-screen { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: var(--papel); }
+.login-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 2rem; width: 340px; }
+.login-logo { display: flex; gap: 6px; margin-bottom: 1rem; }
+.login-logo .dot { width: 16px; height: 16px; border-radius: 50%; }
+.login-card h1 { font-size: 20px; font-weight: 700; margin-bottom: 2px; color: var(--tinta); }
+.login-card p { font-size: 12px; color: var(--gris); margin-bottom: 1.5rem; }
+.login-card label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gris); display: block; margin-bottom: 4px; }
+.login-card input { width: 100%; padding: 9px 11px; border: 1px solid var(--borde); border-radius: 6px; font-size: 14px; margin-bottom: 1rem; }
+.login-error { font-size: 12px; color: var(--rojo); margin-bottom: 0.75rem; display: none; }
+
+/* APP */
+#app-screen { display: none; min-height: 100vh; }
+.topbar { background: var(--rojo); color: var(--blanco); padding: 13px 24px; display: flex; align-items: center; justify-content: space-between; }
+.topbar-left { display: flex; align-items: center; gap: 12px; }
+.topbar-dots { display: flex; gap: 5px; }
+.topbar-dots span { width: 10px; height: 10px; border-radius: 50%; }
+.topbar h1 { font-size: 15px; font-weight: 700; letter-spacing: 0.01em; }
+.topbar-sub { font-size: 11px; opacity: 0.8; }
+.topbar button { font-size: 12px; background: transparent; border: 1px solid rgba(255,255,255,0.45); color: var(--blanco); padding: 5px 12px; border-radius: 5px; cursor: pointer; }
+.topbar button:hover { background: rgba(255,255,255,0.15); }
+
+/* CONFIG BANNER */
+#config-banner { background: #fff8e1; border-bottom: 1px solid #ffe082; padding: 10px 24px; display: flex; align-items: center; gap: 10px; }
+#config-banner input { flex: 1; font-size: 12px; padding: 6px 10px; border: 1px solid var(--borde); border-radius: 5px; }
+#config-banner button { font-size: 12px; background: var(--rojo); color: var(--blanco); border: none; padding: 6px 14px; border-radius: 5px; cursor: pointer; white-space: nowrap; }
+#config-banner label { font-size: 12px; color: #7a5c00; white-space: nowrap; font-weight: 700; }
+
+/* NAV */
+.nav { background: var(--blanco); border-bottom: 2px solid var(--borde); padding: 0 24px; display: flex; gap: 0; }
+.nav button { font-size: 13px; padding: 13px 20px; border: none; background: transparent; cursor: pointer; color: var(--gris); border-bottom: 3px solid transparent; margin-bottom: -2px; font-weight: 600; }
+.nav button.active { color: var(--rojo); border-bottom-color: var(--rojo); }
+.nav button:hover:not(.active) { color: var(--tinta); }
+
+/* MAIN */
+.main { padding: 24px; max-width: 960px; margin: 0 auto; }
+.section { display: none; }
+.section.active { display: block; }
+
+/* FORM */
+.form-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.5rem; }
+.form-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 1.25rem; color: var(--tinta); border-bottom: 2px solid var(--amarillo); padding-bottom: 8px; display: inline-block; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.form-group { display: flex; flex-direction: column; gap: 4px; }
+.form-group.full { grid-column: 1 / -1; }
+.form-group label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gris); }
+.form-group input, .form-group select, .form-group textarea {
+  font-size: 14px; padding: 8px 10px; border: 1px solid var(--borde); border-radius: 6px;
+  background: var(--blanco); color: var(--tinta); width: 100%;
+}
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus {
+  outline: none; border-color: var(--teal);
+}
+.form-group textarea { resize: vertical; min-height: 80px; }
+.btn-primary { background: var(--rojo); color: var(--blanco); border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 700; margin-top: 1rem; }
+.btn-primary:hover { background: #a30f34; }
+.btn-primary:disabled { background: #ccc; cursor: not-allowed; }
+.msg { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 1rem; display: none; }
+.msg.ok { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
+.msg.err { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
+
+/* PANEL */
+.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.metric-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; padding: 16px; border-top: 3px solid var(--borde); }
+.metric-card.total { border-top-color: var(--tinta); }
+.metric-card.pendiente { border-top-color: var(--amarillo); }
+.metric-card.proceso { border-top-color: var(--teal); }
+.metric-card.resuelta { border-top-color: var(--verde); }
+.metric-label { font-size: 11px; color: var(--gris); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
+.metric-value { font-size: 28px; font-weight: 700; color: var(--tinta); }
+.filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
+.filters select { font-size: 13px; padding: 6px 10px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); }
+.btn-sec { font-size: 12px; padding: 6px 12px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); cursor: pointer; font-weight: 600; color: var(--tinta); }
+.btn-sec:hover { background: var(--papel); }
+.btn-export { border-color: var(--verde); color: var(--verde); }
+.table-wrap { overflow-x: auto; background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; }
+table { width: 100%; border-collapse: collapse; font-size: 13px; table-layout: fixed; }
+th { text-align: left; font-size: 11px; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 12px; border-bottom: 1px solid var(--borde); background: var(--papel); }
+td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: #fdf9f0; }
+.badge { display: inline-block; font-size: 11px; font-weight: 700; padding: 3px 9px; border-radius: 20px; }
+.badge.pendiente { background: #fff8e1; color: #856000; }
+.badge.en-proceso { background: #e0f4f8; color: #0d5f75; }
+.badge.resuelta { background: #e8f5e9; color: #1b5e20; }
+.badge.tipo { background: var(--papel); color: var(--gris); }
+.empty-msg { text-align: center; padding: 2rem; color: #aaa; font-size: 13px; }
+.loading-msg { text-align: center; padding: 2rem; color: #999; font-size: 13px; }
+select.estado-inline { font-size: 12px; padding: 3px 6px; border: 1px solid var(--borde); border-radius: 5px; background: var(--blanco); cursor: pointer; }
+
+/* ESTADÍSTICAS */
+.stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
+.stat-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.25rem; }
+.stat-card h3 { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gris); margin-bottom: 1rem; }
+.bar-row { display: flex; align-items: center; gap: 8px; margin-bottom: 8px; }
+.bar-label { font-size: 12px; color: var(--tinta); min-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.bar-track { flex: 1; background: var(--papel); border-radius: 4px; height: 10px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 4px; transition: width 0.4s; }
+.bar-count { font-size: 12px; font-weight: 700; color: var(--gris); min-width: 20px; text-align: right; }
+.donut-wrap { display: flex; align-items: center; justify-content: center; gap: 24px; padding: 0.5rem 0; }
+.donut-legend { display: flex; flex-direction: column; gap: 8px; }
+.legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
+.legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="dot" style="background:var(--rojo)"></div>
+      <div class="dot" style="background:var(--amarillo)"></div>
+      <div class="dot" style="background:var(--verde)"></div>
+      <div class="dot" style="background:var(--teal)"></div>
+    </div>
+    <h1>PAAV</h1>
+    <p>Punto de Asesoramiento y Acompañamiento Vecinal</p>
+    <label>Contraseña de acceso</label>
+    <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()" />
+    <div class="login-error" id="login-error">Contraseña incorrecta.</div>
+    <button class="btn-primary" onclick="login()" style="width:100%;margin-top:0">Ingresar</button>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app-screen">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-dots">
+        <span style="background:var(--amarillo)"></span>
+        <span style="background:var(--verde)"></span>
+        <span style="background:var(--teal)"></span>
+      </div>
+      <div>
+        <div class="topbar-sub">Comunidades</div>
+        <h1>PAAV — Punto de Asesoramiento y Acompañamiento Vecinal</h1>
+      </div>
+    </div>
+    <button onclick="logout()">Salir</button>
+  </div>
+
+  <div id="config-banner" style="display:none">
+    <label>URL del script:</label>
+    <input type="text" id="script-url" placeholder="https://script.google.com/macros/s/XXXXXXXXX/exec" />
+    <button onclick="saveUrl()">Guardar URL</button>
+  </div>
+
+  <div class="nav">
+    <button class="active" onclick="switchTab('carga', this)">+ Nueva consulta</button>
+    <button onclick="switchTab('panel', this)">Panel de seguimiento</button>
+    <button onclick="switchTab('stats', this)">Estadísticas</button>
+  </div>
+
+  <div class="main">
+
+    <!-- FORMULARIO -->
+    <div id="carga" class="section active">
+      <div class="form-card">
+        <h2>Registro de consulta</h2>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Fecha</label>
+            <input type="date" id="f-fecha" />
+          </div>
+          <div class="form-group">
+            <label>Asesor/a que toma la consulta</label>
+            <select id="f-asesor">
+              <option value="">— seleccionar —</option>
+              <option>Facundo</option>
+              <option>Referente 2</option>
+              <option>Referente 3</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Apellido y nombre</label>
+            <input type="text" id="f-nombre" placeholder="González, María" />
+          </div>
+          <div class="form-group">
+            <label>DNI</label>
+            <input type="text" id="f-dni" placeholder="00.000.000" />
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="text" id="f-tel" placeholder="11 1234-5678" />
+          </div>
+          <div class="form-group">
+            <label>Tipo de consulta</label>
+            <select id="f-tipo">
+              <option value="">— seleccionar —</option>
+              <option>Legal / Jurídica</option>
+              <option>Subsidio / Plan social</option>
+              <option>Salud</option>
+              <option>Educación</option>
+              <option>Vivienda</option>
+              <option>Otro</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Domicilio</label>
+            <input type="text" id="f-domicilio" placeholder="Calle, número, barrio" />
+          </div>
+          <div class="form-group">
+            <label>Estado</label>
+            <select id="f-estado">
+              <option value="pendiente">Pendiente</option>
+              <option value="en-proceso">En proceso</option>
+              <option value="resuelta">Resuelta</option>
+            </select>
+          </div>
+          <div class="form-group full">
+            <label>Descripción / observaciones</label>
+            <textarea id="f-desc" placeholder="Resumen de la consulta, derivación, próximos pasos..."></textarea>
+          </div>
+        </div>
+        <button class="btn-primary" id="btn-guardar" onclick="guardarConsulta()">Guardar consulta</button>
+        <div class="msg ok" id="msg-ok">Consulta guardada correctamente en el Sheet.</div>
+        <div class="msg err" id="msg-err">No se pudo guardar. Verificá la URL del script.</div>
+      </div>
+    </div>
+
+    <!-- PANEL -->
+    <div id="panel" class="section">
+      <div class="metrics">
+        <div class="metric-card total"><div class="metric-label">Total</div><div class="metric-value" id="m-total">—</div></div>
+        <div class="metric-card pendiente"><div class="metric-label">Pendientes</div><div class="metric-value" id="m-pend">—</div></div>
+        <div class="metric-card proceso"><div class="metric-label">En proceso</div><div class="metric-value" id="m-proc">—</div></div>
+        <div class="metric-card resuelta"><div class="metric-label">Resueltas</div><div class="metric-value" id="m-res">—</div></div>
+      </div>
+      <div class="filters">
+        <select id="fil-tipo" onchange="filtrar()">
+          <option value="">Todos los tipos</option>
+          <option>Legal / Jurídica</option>
+          <option>Subsidio / Plan social</option>
+          <option>Salud</option>
+          <option>Educación</option>
+          <option>Vivienda</option>
+          <option>Otro</option>
+        </select>
+        <select id="fil-estado" onchange="filtrar()">
+          <option value="">Todos los estados</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en-proceso">En proceso</option>
+          <option value="resuelta">Resuelta</option>
+        </select>
+        <button class="btn-sec" onclick="cargarDatos()">↻ Actualizar</button>
+        <button class="btn-sec btn-export" onclick="exportarCSV()">↓ Exportar CSV</button>
+      </div>
+      <div class="table-wrap">
+        <div class="loading-msg" id="loading-msg">Cargá la URL del script y hacé clic en Actualizar.</div>
+        <table id="tabla" style="display:none">
+          <colgroup>
+            <col style="width:90px">
+            <col style="width:160px">
+            <col style="width:80px">
+            <col style="width:80px">
+            <col style="width:130px">
+            <col style="width:110px">
+            <col style="width:120px">
+            <col style="width:130px">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Fecha</th>
+              <th>Consultante</th>
+              <th>DNI</th>
+              <th>Teléfono</th>
+              <th>Domicilio</th>
+              <th>Tipo</th>
+              <th>Asesor/a</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-body"></tbody>
+        </table>
+        <div class="empty-msg" id="empty-msg" style="display:none">No hay consultas que coincidan con los filtros.</div>
+      </div>
+    </div>
+
+    <!-- ESTADÍSTICAS -->
+    <div id="stats" class="section">
+      <div class="stats-grid">
+        <div class="stat-card" id="chart-tipo">
+          <h3>Consultas por tipo</h3>
+          <div id="bars-tipo"></div>
+        </div>
+        <div class="stat-card" id="chart-estado">
+          <h3>Distribución por estado</h3>
+          <div class="donut-wrap">
+            <canvas id="donut-canvas" width="140" height="140"></canvas>
+            <div class="donut-legend" id="donut-legend"></div>
+          </div>
+        </div>
+        <div class="stat-card" id="chart-asesor">
+          <h3>Consultas por asesor/a</h3>
+          <div id="bars-asesor"></div>
+        </div>
+        <div class="stat-card" id="chart-tiempo">
+          <h3>Consultas por mes</h3>
+          <div id="bars-mes"></div>
+        </div>
+      </div>
+      <div class="loading-msg" id="stats-empty" style="display:none">No hay datos para mostrar. Actualizá desde el panel primero.</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+const PASS = "barrio2025";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwl4GcRCbK55GX9OFgFelEFCnjcCkQdgM9-RjbUBMkyer91MoJdgAWIDUewcenHmjnI/exec";
+let todosLosDatos = [];
+
+function login() {
+  const val = document.getElementById('pwd-input').value;
+  if (val === PASS) {
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('app-screen').style.display = 'block';
+    const saved = localStorage.getItem('paav_script_url');
+    if (saved) {
+      document.getElementById('script-url').value = saved;
+      document.getElementById('config-banner').style.background = '#e8f5e9';
+    }
+    document.getElementById('f-fecha').value = new Date().toISOString().slice(0,10);
+  } else {
+    document.getElementById('login-error').style.display = 'block';
+  }
+}
+
+function logout() {
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('pwd-input').value = '';
+}
+
+function saveUrl() {
+  const url = document.getElementById('script-url').value.trim();
+  if (!url) return;
+  localStorage.setItem('paav_script_url', url);
+  document.getElementById('config-banner').style.background = '#e8f5e9';
+}
+
+function getUrl() {
+  return SCRIPT_URL;
+}
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'panel' || id === 'stats') cargarDatos(id);
+}
+
+async function guardarConsulta() {
+  const url = getUrl();
+  if (!url) { showMsg('err', 'Primero pegá la URL del script de Google.'); return; }
+  const data = {
+    fecha: document.getElementById('f-fecha').value,
+    nombre: document.getElementById('f-nombre').value,
+    dni: document.getElementById('f-dni').value,
+    telefono: document.getElementById('f-tel').value,
+    domicilio: document.getElementById('f-domicilio').value,
+    tipo: document.getElementById('f-tipo').value,
+    asesor: document.getElementById('f-asesor').value,
+    estado: document.getElementById('f-estado').value,
+    descripcion: document.getElementById('f-desc').value
+  };
+  const btn = document.getElementById('btn-guardar');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    await fetch(url, { method: 'POST', mode: 'no-cors', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+    showMsg('ok');
+    ['f-nombre','f-dni','f-tel','f-domicilio','f-desc'].forEach(id => document.getElementById(id).value = '');
+    document.getElementById('f-tipo').value = '';
+    document.getElementById('f-estado').value = 'pendiente';
+  } catch(e) { showMsg('err'); }
+  btn.disabled = false; btn.textContent = 'Guardar consulta';
+}
+
+function showMsg(type, txt) {
+  const el = document.getElementById('msg-' + type);
+  if (txt) el.textContent = txt;
+  el.style.display = 'block';
+  setTimeout(() => el.style.display = 'none', 4000);
+}
+
+async function cargarDatos(destino) {
+  const url = getUrl();
+  const loading = document.getElementById('loading-msg');
+  const tabla = document.getElementById('tabla');
+  if (!url) {
+    if (loading) { loading.textContent = 'Cargá la URL del script y hacé clic en Actualizar.'; loading.style.display = 'block'; }
+    if (tabla) tabla.style.display = 'none';
+    return;
+  }
+  if (loading) { loading.textContent = 'Cargando datos...'; loading.style.display = 'block'; }
+  if (tabla) tabla.style.display = 'none';
+  try {
+    const res = await fetch(url + '?t=' + Date.now());
+    todosLosDatos = await res.json();
+    actualizarMetricas(todosLosDatos);
+    filtrar();
+    if (loading) loading.style.display = 'none';
+    if (tabla) tabla.style.display = 'table';
+    renderStats();
+  } catch(e) {
+    if (loading) loading.textContent = 'Error al cargar. Verificá la URL del script.';
+  }
+}
+
+function actualizarMetricas(datos) {
+  document.getElementById('m-total').textContent = datos.length;
+  document.getElementById('m-pend').textContent = datos.filter(d => d.Estado === 'pendiente').length;
+  document.getElementById('m-proc').textContent = datos.filter(d => d.Estado === 'en-proceso').length;
+  document.getElementById('m-res').textContent = datos.filter(d => d.Estado === 'resuelta').length;
+}
+
+async function cambiarEstado(idx, nuevoEstado) {
+  const url = getUrl();
+  if (!url) return;
+  todosLosDatos[idx].Estado = nuevoEstado;
+  actualizarMetricas(todosLosDatos);
+  try {
+    await fetch(url, {
+      method: 'POST', mode: 'no-cors',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ _accion: 'update', _idx: idx + 1, estado: nuevoEstado })
+    });
+  } catch(e) {}
+}
+
+function filtrar() {
+  const filTipo = document.getElementById('fil-tipo').value;
+  const filEstado = document.getElementById('fil-estado').value;
+  let filtrados = todosLosDatos.filter(d =>
+    (!filTipo || d.Tipo === filTipo) &&
+    (!filEstado || d.Estado === filEstado)
+  );
+  const tbody = document.getElementById('tabla-body');
+  const empty = document.getElementById('empty-msg');
+  if (!filtrados.length) { tbody.innerHTML = ''; empty.style.display = 'block'; return; }
+  empty.style.display = 'none';
+  tbody.innerHTML = filtrados.map((d, i) => {
+    const globalIdx = todosLosDatos.indexOf(d);
+    const estadoVal = (d.Estado||'').toLowerCase().replace(/ /g,'-');
+    return `<tr>
+      <td>${d.Fecha||'—'}</td>
+      <td style="font-weight:600">${d.Nombre||'—'}</td>
+      <td style="color:var(--gris)">${d.DNI||'—'}</td>
+      <td style="color:var(--gris)">${d.Telefono||'—'}</td>
+      <td style="color:var(--gris)">${d.Domicilio||'—'}</td>
+      <td><span class="badge tipo">${d.Tipo||'—'}</span></td>
+      <td>${d.Asesor||'—'}</td>
+      <td>
+        <select class="estado-inline" onchange="cambiarEstado(${globalIdx}, this.value)">
+          <option value="pendiente" ${estadoVal==='pendiente'?'selected':''}>Pendiente</option>
+          <option value="en-proceso" ${estadoVal==='en-proceso'?'selected':''}>En proceso</option>
+          <option value="resuelta" ${estadoVal==='resuelta'?'selected':''}>Resuelta</option>
+        </select>
+      </td>
+    </tr>`;
+  }).join('');
+}
+
+function renderStats() {
+  if (!todosLosDatos.length) {
+    document.getElementById('stats-empty').style.display = 'block';
+    return;
+  }
+  document.getElementById('stats-empty').style.display = 'none';
+  const colores = ['#C4123F','#1B8FA6','#1E9E6A','#F4B915','#6b6b6b','#a330b0'];
+
+  function contarPor(campo) {
+    const mapa = {};
+    todosLosDatos.forEach(d => { const v = d[campo]||'Sin dato'; mapa[v] = (mapa[v]||0) + 1; });
+    return Object.entries(mapa).sort((a,b) => b[1]-a[1]);
+  }
+
+  function renderBars(containerId, datos, color) {
+    const max = Math.max(...datos.map(d=>d[1]), 1);
+    document.getElementById(containerId).innerHTML = datos.map(([label, count]) =>
+      `<div class="bar-row">
+        <span class="bar-label" title="${label}">${label}</span>
+        <div class="bar-track"><div class="bar-fill" style="width:${Math.round(count/max*100)}%;background:${color}"></div></div>
+        <span class="bar-count">${count}</span>
+      </div>`
+    ).join('');
+  }
+
+  renderBars('bars-tipo', contarPor('Tipo'), '#C4123F');
+  renderBars('bars-asesor', contarPor('Asesor'), '#1B8FA6');
+
+  const meses = {};
+  todosLosDatos.forEach(d => {
+    if (d.Fecha) { const m = d.Fecha.slice(0,7); meses[m] = (meses[m]||0) + 1; }
+  });
+  const mesesOrdenados = Object.entries(meses).sort((a,b) => a[0].localeCompare(b[0]));
+  renderBars('bars-mes', mesesOrdenados, '#1E9E6A');
+
+  const estados = contarPor('Estado');
+  const total = todosLosDatos.length;
+  const estadoColores = { 'pendiente': '#F4B915', 'en-proceso': '#1B8FA6', 'resuelta': '#1E9E6A' };
+  const canvas = document.getElementById('donut-canvas');
+  const ctx = canvas.getContext('2d');
+  ctx.clearRect(0,0,140,140);
+  let angulo = -Math.PI / 2;
+  estados.forEach(([label, count]) => {
+    const slice = (count / total) * 2 * Math.PI;
+    ctx.beginPath();
+    ctx.moveTo(70,70);
+    ctx.arc(70,70,60,angulo,angulo+slice);
+    ctx.closePath();
+    ctx.fillStyle = estadoColores[label] || '#ccc';
+    ctx.fill();
+    angulo += slice;
+  });
+  ctx.beginPath();
+  ctx.arc(70,70,35,0,2*Math.PI);
+  ctx.fillStyle = '#fff';
+  ctx.fill();
+  ctx.fillStyle = '#1a1a1a';
+  ctx.font = 'bold 18px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(total, 70, 70);
+
+  document.getElementById('donut-legend').innerHTML = estados.map(([label, count]) =>
+    `<div class="legend-item">
+      <div class="legend-dot" style="background:${estadoColores[label]||'#ccc'}"></div>
+      <span>${label} <strong>(${count})</strong></span>
+    </div>`
+  ).join('');
+}
+
+function exportarCSV() {
+  if (!todosLosDatos.length) { alert('No hay datos para exportar.'); return; }
+  const cols = ['Fecha','Nombre','DNI','Telefono','Domicilio','Tipo','Asesor','Estado','Descripción'];
+  const rows = todosLosDatos.map(d => cols.map(c => '"' + (d[c]||'').toString().replace(/"/g,'""') + '"').join(','));
+  const csv = [cols.join(','), ...rows].join('\n');
+  const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'paav_consultas_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.click();
+}
+</script>
+</body>
+</html>
