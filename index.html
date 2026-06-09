@@ -90,31 +90,41 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
 .btn-export { border-color: var(--verde); color: var(--verde); }
 .table-wrap { overflow-x: auto; background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; }
 table { width: 100%; border-collapse: collapse; font-size: 13px; }
-th { text-align: left; font-size: 11px; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: 0.04em; padding: 10px 12px; border-bottom: 1px solid var(--borde); background: var(--papel); white-space: nowrap; }
-td { padding: 9px 12px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
+th { text-align: left; font-size: 11px; font-weight: 700; color: var(--gris); text-transform: uppercase; letter-spacing: 0.04em; padding: 11px 14px; border-bottom: 2px solid var(--borde); background: var(--papel); white-space: nowrap; }
+td { padding: 11px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
 tr:last-child td { border-bottom: none; }
+tr.main-row { transition: background 0.15s; }
 tr.main-row:hover td { background: #fdf9f0; cursor: pointer; }
-tr.main-row td { white-space: nowrap; overflow: hidden; max-width: 160px; text-overflow: ellipsis; }
-tr.main-row td.desc-cell { max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+tr.main-row td { white-space: nowrap; overflow: hidden; max-width: 180px; text-overflow: ellipsis; }
+tr.main-row td.desc-cell { max-width: 260px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: var(--gris); font-size: 12px; }
+tr.main-row td.nombre-cell { font-weight: 600; color: var(--tinta); }
+tr.main-row td.fecha-cell { color: var(--gris); font-size: 12px; white-space: nowrap; }
 
 /* FILA DE SEGUIMIENTO (expandible) */
-tr.seguimiento-row td { background: #f8f6ff; border-bottom: 2px solid #e0d8f5; padding: 0; }
+tr.seguimiento-row td { background: #fafafa; border-bottom: 3px solid #e0d8f5; padding: 0; }
 tr.seguimiento-row { display: none; }
 tr.seguimiento-row.open { display: table-row; }
-.seg-panel { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
-@media (max-width: 700px) { .seg-panel { grid-template-columns: 1fr; } .seg-group.wide { grid-column: 1; } }
+.seg-panel { padding: 0; }
+.seg-datos-consulta { background: #f0ecff; border-bottom: 1px solid #ddd6f5; padding: 14px 20px; display: grid; grid-template-columns: repeat(4, auto) 1fr; gap: 0 28px; align-items: start; }
+.seg-dato-item { display: flex; flex-direction: column; gap: 2px; }
+.seg-dato-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; }
+.seg-dato-val { font-size: 13px; color: var(--tinta); }
+.seg-desc-area { background: #f0ecff; border-bottom: 1px solid #ddd6f5; padding: 10px 20px 14px; }
+.seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; margin-bottom: 5px; }
+.seg-desc-box { font-size: 13px; color: var(--tinta); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.seg-form { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; background: #fafafa; }
+@media (max-width: 700px) { .seg-form { grid-template-columns: 1fr; } .seg-group.wide { grid-column: 1; } .seg-datos-consulta { grid-template-columns: 1fr 1fr; } }
 .seg-group { display: flex; flex-direction: column; gap: 4px; }
 .seg-group.wide { grid-column: 1 / -1; }
-.seg-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; }
+.seg-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #555; }
 .seg-group input, .seg-group select, .seg-group textarea {
-  font-size: 13px; padding: 6px 9px; border: 1px solid #c9bef0; border-radius: 5px;
+  font-size: 13px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 5px;
   background: var(--blanco); color: var(--tinta); width: 100%;
 }
-.seg-group textarea { resize: vertical; min-height: 60px; }
-.seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; margin-bottom: 6px; }
-.seg-desc-box { font-size: 13px; color: var(--tinta); background: #f0ecff; border-left: 3px solid #9b7fe0; border-radius: 4px; padding: 10px 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
-.seg-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
-.btn-guardar-seg { font-size: 12px; background: #5c3bc2; color: #fff; border: none; padding: 7px 18px; border-radius: 5px; cursor: pointer; font-weight: 700; }
+.seg-group input:focus, .seg-group select:focus, .seg-group textarea:focus { outline: none; border-color: #9b7fe0; }
+.seg-group textarea { resize: vertical; min-height: 65px; }
+.seg-actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; padding-top: 4px; }
+.btn-guardar-seg { font-size: 13px; background: #5c3bc2; color: #fff; border: none; padding: 8px 22px; border-radius: 5px; cursor: pointer; font-weight: 700; }
 .btn-guardar-seg:hover { background: #4a2ea0; }
 .btn-guardar-seg:disabled { background: #aaa; cursor: not-allowed; }
 .seg-msg { font-size: 12px; color: #1b5e20; display: none; }
@@ -125,6 +135,10 @@ tr.seguimiento-row.open { display: table-row; }
 .badge.en-proceso { background: #e0f4f8; color: #0d5f75; }
 .badge.resuelta { background: #e8f5e9; color: #1b5e20; }
 .badge.tipo { background: var(--papel); color: var(--gris); }
+.badge.urgente { background: #fff0f0; color: #c4123f; border: 1.5px solid #f5a0a0; font-weight: 800; letter-spacing: 0.03em; }
+.urgente-check-wrap { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; user-select: none; }
+.urgente-check-wrap input[type=checkbox] { width: 17px; height: 17px; accent-color: #c4123f; cursor: pointer; }
+.urgente-check-wrap span { font-size: 13px; font-weight: 700; color: #c4123f; }
 .empty-msg { text-align: center; padding: 2rem; color: #aaa; font-size: 13px; }
 .loading-msg { text-align: center; padding: 2rem; color: #999; font-size: 13px; }
 
@@ -136,6 +150,8 @@ tr.seguimiento-row.open { display: table-row; }
 /* Botón expandir */
 .btn-expand { font-size: 11px; background: none; border: 1px solid #c9bef0; color: #5c3bc2; padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
 .btn-expand:hover { background: #f0ecff; }
+.btn-xls { font-size: 11px; background: none; border: 1px solid #b8ddb0; color: #1E9E6A; padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; margin-left: 4px; }
+.btn-xls:hover { background: #edf7eb; }
 
 /* ESTADÍSTICAS */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
@@ -151,6 +167,7 @@ tr.seguimiento-row.open { display: table-row; }
 .legend-item { display: flex; align-items: center; gap: 8px; font-size: 12px; }
 .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 
@@ -340,15 +357,12 @@ tr.seguimiento-row.open { display: table-row; }
           <thead>
             <tr>
               <th>Fecha</th>
-              <th>Nombre</th>
-              <th>Apellido</th>
-              <th>DNI</th>
-              <th>Teléfono</th>
+              <th>Nombre y apellido</th>
               <th>Tipo</th>
               <th>Estado</th>
               <th>Asesor</th>
               <th>Descripción</th>
-              <th>Seguimiento</th>
+              <th></th>
             </tr>
           </thead>
           <tbody id="tabla-body"></tbody>
@@ -388,7 +402,7 @@ tr.seguimiento-row.open { display: table-row; }
 
 <script>
 const PASS = "barrio2025";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwPsvLibsVim9il31kptX_eVqLY0jdk8hfhuFrjYDg0Lgvqz6pmyTu5YnUypJjceuOM/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnyfHCfqRL53PLL1TbJ97M-maRHhSN8jrnm5FWWDCvcP1M_fRtQQmC-DsvYObmUybC/exec";
 
 // Mapeo de claves del sheet → nombres que usamos internamente
 // El sheet tiene: Fecha Nombre Apellido DNI Telefono Domicilio Tipo Asesor Estado Descripción
@@ -556,34 +570,62 @@ function filtrar() {
     const vRespuesta   = esc(d['Respuesta Consultante'] || '');
     const vEstado      = estadoVal;
     const vTipo        = d.Tipo || '';
+    const vUrgente     = (d.Urgente || '').toString().trim().toLowerCase() === 'sí' || (d.Urgente || '').toString().trim().toLowerCase() === 'si';
+
+    // Formato de fecha: DD/MM/YYYY (el sheet devuelve ISO o string con T03:00...)
+    function formatFecha(f) {
+      if (!f) return '—';
+      const s = String(f);
+      // Si tiene formato ISO: 2026-06-06T...
+      const m = s.match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m) return m[3] + '/' + m[2] + '/' + m[1];
+      return s;
+    }
 
     // Fila principal — al hacer clic en la fila se expande/colapsa
     const filaMain = `<tr class="main-row" onclick="toggleSeg(${globalIdx})">
-      <td>${esc(d.Fecha||'—')}</td>
-      <td style="font-weight:600">${esc(d.Nombre||'—')}</td>
-      <td>${esc(d.Apellido||'—')}</td>
-      <td style="color:var(--gris)">${esc(d.DNI||'—')}</td>
-      <td style="color:var(--gris)">${esc(d.Telefono||'—')}</td>
+      <td class="fecha-cell">${formatFecha(d.Fecha)}</td>
+      <td class="nombre-cell">${esc(d.Nombre||'—')} ${esc(d.Apellido||'')}</td>
       <td><span class="badge tipo">${esc(d.Tipo||'—')}</span></td>
-      <td><span class="badge ${badgeClass}">${estadoLabel}</span></td>
+      <td><span class="badge ${badgeClass}">${estadoLabel}</span>${vUrgente ? ' <span class="badge urgente">⚠ URGENTE</span>' : ''}</td>
       <td>${esc(d.Asesor||'—')}</td>
-      <td class="desc-cell" title="${esc(d['Descripción']||d.Descripcion||'')}">${esc(truncar(d['Descripción']||d.Descripcion||'—', 60))}</td>
+      <td class="desc-cell" title="${esc(d['Descripción']||d.Descripcion||'')}">${esc(truncar(d['Descripción']||d.Descripcion||'—', 80))}</td>
       <td>
         <button class="btn-expand" onclick="event.stopPropagation(); toggleSeg(${globalIdx})">
-          ${tieneSeg ? '✏️ Ver / editar' : '+ Agregar'}
+          ${tieneSeg ? '✏️ editar' : '+ seguimiento'}
           <span class="seg-indicator ${tieneSeg ? 'tiene' : 'vacio'}"></span>
         </button>
+        <button class="btn-xls" onclick="event.stopPropagation(); exportarCasoXLS(${globalIdx})" title="Exportar caso como Excel">↓ XLS</button>
       </td>
     </tr>`;
 
+    // Datos extra del consultante para mostrar en el panel
+    const vExtranjero = esc(d.Extranjero||'');
+    const vJubilado   = esc(d.Jubilado||'');
+    const vBeneficio  = esc(d['Beneficio social']||d['Beneficio Social']||'');
+    const vCualBenef  = esc(d['Cuál beneficio']||d['Cual beneficio']||'');
+    const vDNI        = esc(d.DNI||'');
+    const vTel        = esc(d.Telefono||'');
+
     // Fila de seguimiento (oculta por defecto)
     const filaSeg = `<tr class="seguimiento-row" id="seg-row-${globalIdx}">
-      <td colspan="10">
+      <td colspan="7">
         <div class="seg-panel">
-          <div class="seg-group wide">
+          <!-- Datos del consultante -->
+          <div class="seg-datos-consulta">
+            ${vDNI ? `<div class="seg-dato-item"><span class="seg-dato-label">DNI</span><span class="seg-dato-val">${vDNI}</span></div>` : ''}
+            ${vTel ? `<div class="seg-dato-item"><span class="seg-dato-label">Teléfono</span><span class="seg-dato-val">${vTel}</span></div>` : ''}
+            ${vExtranjero ? `<div class="seg-dato-item"><span class="seg-dato-label">Situación migratoria</span><span class="seg-dato-val">${vExtranjero}</span></div>` : ''}
+            ${vJubilado ? `<div class="seg-dato-item"><span class="seg-dato-label">Jubilado/a</span><span class="seg-dato-val">${vJubilado}</span></div>` : ''}
+            ${vBeneficio ? `<div class="seg-dato-item"><span class="seg-dato-label">Beneficio social</span><span class="seg-dato-val">${vBeneficio}${vCualBenef ? ' — ' + vCualBenef : ''}</span></div>` : ''}
+          </div>
+          <!-- Descripción del caso -->
+          <div class="seg-desc-area">
             <div class="seg-desc-header">Descripción del caso</div>
             <div class="seg-desc-box">${esc(d["Descripción"]||d["Descripcion"]||"Sin descripción.")}</div>
           </div>
+          <!-- Formulario de seguimiento -->
+          <div class="seg-form">
           <div class="seg-group">
             <label>Estado</label>
             <select id="seg-estado-${globalIdx}">
@@ -628,11 +670,19 @@ function filtrar() {
             <label>Comentarios / observaciones de seguimiento</label>
             <textarea id="seg-comentarios-${globalIdx}" placeholder="Gestiones realizadas, próximos pasos...">${vComentarios}</textarea>
           </div>
+          <div class="seg-group">
+            <label>Urgencia</label>
+            <label class="urgente-check-wrap">
+              <input type="checkbox" id="seg-urgente-${globalIdx}" ${vUrgente ? 'checked' : ''} />
+              <span>Marcar como urgente</span>
+            </label>
+          </div>
           <div class="seg-actions">
             <button class="btn-guardar-seg" id="seg-btn-${globalIdx}" onclick="guardarSeguimiento(${globalIdx})">Guardar seguimiento</button>
             <span class="seg-msg" id="seg-msg-${globalIdx}"></span>
           </div>
-        </div>
+          </div><!-- /seg-form -->
+        </div><!-- /seg-panel -->
       </td>
     </tr>`;
 
@@ -665,6 +715,7 @@ async function guardarSeguimiento(globalIdx) {
   const asesorSeg  = document.getElementById(`seg-asesor-${globalIdx}`).value;
   const comentarios = document.getElementById(`seg-comentarios-${globalIdx}`).value;
   const respuesta  = document.getElementById(`seg-respuesta-${globalIdx}`).value;
+  const urgente    = document.getElementById(`seg-urgente-${globalIdx}`).checked ? 'Sí' : 'No';
 
   const btn = document.getElementById(`seg-btn-${globalIdx}`);
   const msg = document.getElementById(`seg-msg-${globalIdx}`);
@@ -675,6 +726,7 @@ async function guardarSeguimiento(globalIdx) {
     _idx: filaSheet,
     estado: estado,
     tipo: tipo,
+    urgente: urgente,
     asesor_seguimiento: asesorSeg,
     observaciones_seguimiento: comentarios,
     respuesta_consultante: respuesta
@@ -687,8 +739,9 @@ async function guardarSeguimiento(globalIdx) {
       body: JSON.stringify(payload)
     });
     // Actualizar datos locales para que la UI refleje el cambio
-    todosLosDatos[globalIdx].Estado = estado;
-    todosLosDatos[globalIdx].Tipo   = tipo;
+    todosLosDatos[globalIdx].Estado   = estado;
+    todosLosDatos[globalIdx].Tipo     = tipo;
+    todosLosDatos[globalIdx].Urgente  = urgente;
     todosLosDatos[globalIdx]['Asesor seguimiento'] = asesorSeg;
     todosLosDatos[globalIdx]['comentarios seguimiento'] = comentarios;
     todosLosDatos[globalIdx]['Respuesta Consultante'] = respuesta;
@@ -776,6 +829,54 @@ function renderStats() {
       <span>${label} <strong>(${count})</strong></span>
     </div>`
   ).join('');
+}
+
+// ─── EXPORTAR CASO INDIVIDUAL COMO EXCEL ──────────────────────────────────
+function exportarCasoXLS(globalIdx) {
+  const d = todosLosDatos[globalIdx];
+  if (!d) return;
+
+  // Columnas en el mismo orden que el sheet
+  const campos = [
+    ['Fecha',                  d.Fecha ? String(d.Fecha).replace(/T.*/, '') : ''],
+    ['Nombre',                 d.Nombre || ''],
+    ['Apellido',               d.Apellido || ''],
+    ['DNI',                    d.DNI || ''],
+    ['Teléfono',               d.Telefono || ''],
+    ['Domicilio',              d.Domicilio || ''],
+    ['Tipo de consulta',       d.Tipo || ''],
+    ['Asesor/a',               d.Asesor || ''],
+    ['Estado',                 d.Estado || ''],
+    ['Descripción',            d['Descripción'] || d.Descripcion || ''],
+    ['Extranjero',             d.Extranjero || ''],
+    ['Jubilado/a',             d.Jubilado || ''],
+    ['Beneficio social',       d['Beneficio social'] || d['Beneficio Social'] || ''],
+    ['Cuál beneficio',         d['Cuál beneficio'] || d['Cual beneficio'] || ''],
+    ['Asesor seguimiento',     d['Asesor seguimiento'] || ''],
+    ['Comentarios seguimiento',d['comentarios seguimiento'] || ''],
+    ['Respuesta consultante',  d['Respuesta Consultante'] || ''],
+    ['Urgente',                d.Urgente || 'No'],
+  ];
+
+  // Construir la hoja: cada campo en una fila, columna A = nombre, columna B = valor
+  const filas = campos.map(([label, valor]) => [label, valor]);
+
+  const ws = XLSX.utils.aoa_to_sheet(filas);
+
+  // Ancho de columnas
+  ws['!cols'] = [{ wch: 26 }, { wch: 50 }];
+
+  // Estilo de la primera columna (solo títulos, SheetJS básico no tiene estilos ricos sin pro)
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, 'Caso');
+
+  // Nombre del archivo: apellido_nombre_fecha
+  const apellido = (d.Apellido || 'caso').replace(/\s+/g, '_');
+  const nombre   = (d.Nombre   || '').replace(/\s+/g, '_');
+  const fecha    = String(d.Fecha || '').replace(/T.*/, '');
+  const filename = `PAAV_${apellido}_${nombre}_${fecha}.xlsx`;
+
+  XLSX.writeFile(wb, filename);
 }
 
 // ─── EXPORTAR CSV ──────────────────────────────────────────────────────────
