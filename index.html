@@ -479,7 +479,27 @@ async function cargarDatos() {
   tabla.style.display = 'none';
   try {
     const res = await fetch(SCRIPT_URL + '?t=' + Date.now());
-    todosLosDatos = await res.json();
+    const raw = await res.json();
+    // Normalizamos los nombres de campos problemáticos al recibirlos,
+    // independientemente de cómo estén escritos en el sheet
+    todosLosDatos = raw.map(d => {
+      const n = {};
+      Object.keys(d).forEach(k => { n[k] = d[k]; });
+      // Buscar variantes de cada campo y unificarlas
+      const find = (obj, ...keys) => {
+        for (const k of keys) {
+          const match = Object.keys(obj).find(h => h.trim().toLowerCase() === k.toLowerCase());
+          if (match !== undefined) return obj[match];
+        }
+        return '';
+      };
+      n['Asesor seguimiento']      = find(d, 'asesor seguimiento');
+      n['comentarios seguimiento'] = find(d, 'comentarios seguimiento');
+      n['Respuesta Consultante']   = find(d, 'respuesta consultante');
+      n['Estado']                  = find(d, 'estado') || 'pendiente';
+      n['Descripción']             = find(d, 'descripción', 'descripcion');
+      return n;
+    });
     actualizarMetricas(todosLosDatos);
     filtrar();
     loading.style.display = 'none';
