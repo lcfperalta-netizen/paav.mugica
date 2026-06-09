@@ -102,6 +102,7 @@ tr.seguimiento-row td { background: #f8f6ff; border-bottom: 2px solid #e0d8f5; p
 tr.seguimiento-row { display: none; }
 tr.seguimiento-row.open { display: table-row; }
 .seg-panel { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+@media (max-width: 700px) { .seg-panel { grid-template-columns: 1fr; } .seg-group.wide { grid-column: 1; } }
 .seg-group { display: flex; flex-direction: column; gap: 4px; }
 .seg-group.wide { grid-column: 1 / -1; }
 .seg-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; }
@@ -110,10 +111,8 @@ tr.seguimiento-row.open { display: table-row; }
   background: var(--blanco); color: var(--tinta); width: 100%;
 }
 .seg-group textarea { resize: vertical; min-height: 60px; }
-.seg-desc-toggle { font-size: 11px; color: #7b6bb0; background: none; border: 1px solid #c9bef0; border-radius: 4px; padding: 3px 8px; cursor: pointer; margin-bottom: 6px; display: inline-block; }
-.seg-desc-toggle:hover { background: #f0ecff; }
-.seg-desc-box { font-size: 12px; color: var(--tinta); background: #f0ecff; border-left: 3px solid #c9bef0; border-radius: 4px; padding: 10px 12px; line-height: 1.6; white-space: pre-wrap; display: none; }
-.seg-desc-box.open { display: block; }
+.seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; margin-bottom: 6px; }
+.seg-desc-box { font-size: 13px; color: var(--tinta); background: #f0ecff; border-left: 3px solid #9b7fe0; border-radius: 4px; padding: 10px 14px; line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
 .seg-actions { display: flex; gap: 8px; align-items: center; margin-top: 4px; }
 .btn-guardar-seg { font-size: 12px; background: #5c3bc2; color: #fff; border: none; padding: 7px 18px; border-radius: 5px; cursor: pointer; font-weight: 700; }
 .btn-guardar-seg:hover { background: #4a2ea0; }
@@ -562,8 +561,8 @@ function filtrar() {
       <td colspan="10">
         <div class="seg-panel">
           <div class="seg-group wide">
-            <button class="seg-desc-toggle" onclick="toggleDesc(${globalIdx})">▶ Ver descripción del caso</button>
-            <div class="seg-desc-box" id="seg-desc-${globalIdx}">${esc(d['Descripción']||d.Descripcion||'Sin descripción.')}</div>
+            <div class="seg-desc-header">Descripción del caso</div>
+            <div class="seg-desc-box">${esc(d["Descripción"]||d["Descripcion"]||"Sin descripción.")}</div>
           </div>
           <div class="seg-group">
             <label>Estado</label>
@@ -636,13 +635,6 @@ function toggleSeg(idx) {
   row.classList.toggle('open');
 }
 
-function toggleDesc(idx) {
-  const box = document.getElementById('seg-desc-' + idx);
-  const btn = box.previousElementSibling;
-  if (!box) return;
-  box.classList.toggle('open');
-  btn.textContent = box.classList.contains('open') ? '▼ Ocultar descripción' : '▶ Ver descripción del caso';
-}
 
 // ─── GUARDAR SEGUIMIENTO ───────────────────────────────────────────────────
 // Envía al script el índice real en el sheet (globalIdx + 2 porque hay 1 fila de header y arrays son 0-based)
