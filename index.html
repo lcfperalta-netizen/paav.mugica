@@ -75,16 +75,21 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
 .msg.err { background: #ffebee; color: #b71c1c; border: 1px solid #ef9a9a; }
 
 /* PANEL */
-.metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 1.5rem; }
+.metrics { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; margin-bottom: 1.5rem; }
 .metric-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; padding: 16px; border-top: 3px solid var(--borde); }
 .metric-card.total { border-top-color: var(--tinta); }
 .metric-card.pendiente { border-top-color: var(--amarillo); }
 .metric-card.proceso { border-top-color: var(--teal); }
 .metric-card.resuelta { border-top-color: var(--verde); }
+.metric-card.urgentes { border-top-color: var(--rojo); }
+.metric-card.urgentes .metric-value { color: var(--rojo); }
 .metric-label { font-size: 11px; color: var(--gris); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
 .metric-value { font-size: 28px; font-weight: 700; color: var(--tinta); }
 .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .filters select { font-size: 13px; padding: 6px 10px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); }
+.busqueda-input { font-size: 13px; padding: 7px 12px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); width: 280px; }
+.busqueda-input:focus { outline: none; border-color: var(--teal); }
+@media (max-width: 700px) { .busqueda-input { width: 100%; } }
 .btn-sec { font-size: 12px; padding: 6px 12px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); cursor: pointer; font-weight: 600; color: var(--tinta); }
 .btn-sec:hover { background: var(--papel); }
 .btn-export { border-color: var(--verde); color: var(--verde); }
@@ -112,8 +117,54 @@ tr.seguimiento-row.open { display: table-row; }
 .seg-desc-area { background: #f0ecff; border-bottom: 1px solid #ddd6f5; padding: 10px 20px 14px; }
 .seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; margin-bottom: 5px; }
 .seg-desc-box { font-size: 13px; color: var(--tinta); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
+.seg-historial { font-size: 12.5px; color: var(--tinta); line-height: 1.7; white-space: pre-wrap; word-break: break-word; background: var(--blanco); border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px 13px; max-height: 180px; overflow-y: auto; }
+.seg-historial.vacio { color: #aaa; font-style: italic; }
 .seg-form { padding: 16px 20px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; background: #fafafa; }
-@media (max-width: 700px) { .seg-form { grid-template-columns: 1fr; } .seg-group.wide { grid-column: 1; } .seg-datos-consulta { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 700px) {
+  /* NAV */
+  .nav { padding: 0 8px; }
+  .nav button { font-size: 12px; padding: 11px 10px; }
+  /* MAIN */
+  .main { padding: 12px; }
+  /* LOGIN */
+  .login-card { width: 92vw; padding: 1.5rem; }
+  /* TOPBAR */
+  .topbar { padding: 10px 14px; }
+  .topbar h1 { font-size: 13px; }
+  .topbar-dots { display: none; }
+  /* MÉTRICAS */
+  .metrics { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .metric-card.urgentes { grid-column: 1 / -1; }
+  .metric-value { font-size: 22px; }
+  /* FILTROS */
+  .filters { gap: 6px; }
+  .filters select { font-size: 12px; flex: 1; min-width: 0; }
+  .btn-sec { font-size: 12px; padding: 6px 10px; }
+  /* FORMULARIO */
+  .form-grid { grid-template-columns: 1fr; }
+  .form-group.full { grid-column: 1; }
+  /* TABLA → TARJETAS en mobile */
+  table, thead, tbody, th, td, tr { display: block; }
+  thead { display: none; }
+  tr.main-row { background: var(--blanco); border: 1px solid var(--borde); border-radius: 8px; margin-bottom: 8px; padding: 12px 14px; position: relative; }
+  tr.main-row td { border: none; padding: 3px 0; max-width: 100%; white-space: normal; overflow: visible; }
+  tr.main-row td.fecha-cell { font-size: 11px; color: var(--gris); margin-bottom: 2px; }
+  tr.main-row td.nombre-cell { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
+  tr.main-row td.desc-cell { font-size: 12px; color: var(--gris); max-width: 100%; white-space: normal; margin-top: 4px; }
+  tr.main-row td:last-child { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
+  tr.seguimiento-row td { border-radius: 0 0 8px 8px; margin-top: -8px; margin-bottom: 8px; border: 1px solid #e0d8f5; border-top: none; }
+  .table-wrap { border: none; background: transparent; overflow-x: visible; }
+  table { width: 100%; }
+  /* PANEL EXPANDIBLE */
+  .seg-form { grid-template-columns: 1fr; }
+  .seg-group.wide { grid-column: 1; }
+  .seg-datos-consulta { grid-template-columns: 1fr 1fr; }
+  /* STATS */
+  .stats-grid { grid-template-columns: 1fr; }
+  .bar-label { min-width: 110px; }
+  /* BOTONES ACCIÓN */
+  .btn-expand, .btn-xls { font-size: 12px; padding: 5px 10px; }
+}
 .seg-group { display: flex; flex-direction: column; gap: 4px; }
 .seg-group.wide { grid-column: 1 / -1; }
 .seg-group label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #555; }
@@ -136,6 +187,10 @@ tr.seguimiento-row.open { display: table-row; }
 .badge.resuelta { background: #e8f5e9; color: #1b5e20; }
 .badge.tipo { background: var(--papel); color: var(--gris); }
 .badge.urgente { background: #fff0f0; color: #c4123f; border: 1.5px solid #f5a0a0; font-weight: 800; letter-spacing: 0.03em; }
+.dias-badge { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 12px; white-space: nowrap; }
+.dias-badge.dias-ok { background: #f0f0f0; color: #888; }
+.dias-badge.dias-aviso { background: #fff4d6; color: #9a6b00; }
+.dias-badge.dias-alerta { background: #ffe3e3; color: #b71c1c; }
 .urgente-check-wrap { display: flex; align-items: center; gap: 8px; padding: 6px 0; cursor: pointer; user-select: none; }
 .urgente-check-wrap input[type=checkbox] { width: 17px; height: 17px; accent-color: #c4123f; cursor: pointer; }
 .urgente-check-wrap span { font-size: 13px; font-weight: 700; color: #c4123f; }
@@ -152,6 +207,18 @@ tr.seguimiento-row.open { display: table-row; }
 .btn-expand:hover { background: #f0ecff; }
 .btn-xls { font-size: 11px; background: none; border: 1px solid #b8ddb0; color: #1E9E6A; padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; margin-left: 4px; }
 .btn-xls:hover { background: #edf7eb; }
+/* Estilos tarjeta mobile */
+@media (max-width: 700px) {
+  tr.main-row td[data-label]::before {
+    content: attr(data-label) " ";
+    font-size: 10px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.04em; color: var(--gris); display: block; margin-bottom: 1px;
+  }
+  tr.main-row td.fecha-cell, tr.main-row td.nombre-cell { display: block; }
+  tr.main-row td.nombre-cell { font-size: 16px; }
+  tr.main-row td.asesor-cell::before { content: "Asesor/a: "; font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--gris); }
+  tr.main-row td.asesor-cell { font-size: 12px; color: var(--gris); }
+}
 
 /* ESTADÍSTICAS */
 .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 1.5rem; }
@@ -319,8 +386,10 @@ tr.seguimiento-row.open { display: table-row; }
         <div class="metric-card pendiente"><div class="metric-label">Pendientes</div><div class="metric-value" id="m-pend">—</div></div>
         <div class="metric-card proceso"><div class="metric-label">En proceso</div><div class="metric-value" id="m-proc">—</div></div>
         <div class="metric-card resuelta"><div class="metric-label">Resueltas</div><div class="metric-value" id="m-res">—</div></div>
+        <div class="metric-card urgentes"><div class="metric-label">⚠ Urgentes</div><div class="metric-value" id="m-urg">—</div></div>
       </div>
       <div class="filters">
+        <input type="text" id="fil-busqueda" class="busqueda-input" placeholder="🔍 Buscar por nombre, apellido o DNI..." oninput="filtrar()" />
         <select id="fil-tipo" onchange="filtrar()">
           <option value="">Todos los tipos</option>
           <optgroup label="Jurídica">
@@ -531,18 +600,44 @@ function actualizarMetricas(datos) {
   document.getElementById('m-pend').textContent = datos.filter(d => norm(d.Estado) === 'pendiente').length;
   document.getElementById('m-proc').textContent = datos.filter(d => norm(d.Estado) === 'en-proceso').length;
   document.getElementById('m-res').textContent  = datos.filter(d => norm(d.Estado) === 'resuelta').length;
+  document.getElementById('m-urg').textContent  = datos.filter(d => { const u = norm(d.Urgente); return (u === 'sí' || u === 'si') && norm(d.Estado) !== 'resuelta'; }).length;
 }
 
 // ─── TABLA CON FILAS EXPANDIBLES ──────────────────────────────────────────
 function filtrar() {
   const filTipo   = document.getElementById('fil-tipo').value;
   const filEstado = document.getElementById('fil-estado').value;
+  const busqueda  = document.getElementById('fil-busqueda').value.trim().toLowerCase();
   const norm = v => (v||'').toString().trim().toLowerCase();
 
   let filtrados = todosLosDatos.filter(d =>
     (!filTipo   || d.Tipo  === filTipo) &&
-    (!filEstado || norm(d.Estado) === filEstado)
+    (!filEstado || norm(d.Estado) === filEstado) &&
+    (!busqueda  ||
+      norm(d.Nombre).includes(busqueda) ||
+      norm(d.Apellido).includes(busqueda) ||
+      norm(d.DNI).includes(busqueda) ||
+      (norm(d.Nombre) + ' ' + norm(d.Apellido)).includes(busqueda)
+    )
   );
+
+  // ORDENAMIENTO: urgentes primero, luego por estado (pendientes > en proceso > resueltas),
+  // y dentro de cada grupo, los más viejos primero (más días esperando = más arriba)
+  const pesoEstado = { 'pendiente': 0, 'en-proceso': 1, 'resuelta': 2 };
+  const esUrgente = d => {
+    const u = norm(d.Urgente);
+    return u === 'sí' || u === 'si';
+  };
+  filtrados.sort((a, b) => {
+    // 1) urgentes arriba
+    if (esUrgente(a) !== esUrgente(b)) return esUrgente(a) ? -1 : 1;
+    // 2) por estado
+    const pa = pesoEstado[norm(a.Estado)] ?? 0;
+    const pb = pesoEstado[norm(b.Estado)] ?? 0;
+    if (pa !== pb) return pa - pb;
+    // 3) más viejos primero (fecha ascendente)
+    return String(a.Fecha||'').localeCompare(String(b.Fecha||''));
+  });
 
   const tbody = document.getElementById('tabla-body');
   const empty = document.getElementById('empty-msg');
@@ -582,13 +677,27 @@ function filtrar() {
       return s;
     }
 
+    // Días desde la consulta (solo para casos no resueltos)
+    let diasBadge = '';
+    if (estadoVal !== 'resuelta' && d.Fecha) {
+      const m2 = String(d.Fecha).match(/^(\d{4})-(\d{2})-(\d{2})/);
+      if (m2) {
+        const fConsulta = new Date(+m2[1], +m2[2]-1, +m2[3]);
+        const dias = Math.floor((Date.now() - fConsulta.getTime()) / 86400000);
+        if (dias >= 1) {
+          const clase = dias >= 15 ? 'dias-alerta' : dias >= 7 ? 'dias-aviso' : 'dias-ok';
+          diasBadge = ` <span class="dias-badge ${clase}">hace ${dias}d</span>`;
+        }
+      }
+    }
+
     // Fila principal — al hacer clic en la fila se expande/colapsa
     const filaMain = `<tr class="main-row" onclick="toggleSeg(${globalIdx})">
-      <td class="fecha-cell">${formatFecha(d.Fecha)}</td>
-      <td class="nombre-cell">${esc(d.Nombre||'—')} ${esc(d.Apellido||'')}</td>
+      <td class="fecha-cell">${formatFecha(d.Fecha)}${diasBadge}</td>
+      <td class="nombre-cell">${esc(d.Nombre||'—')} ${esc(d.Apellido||'')}${vUrgente ? ' <span class="badge urgente">⚠ URGENTE</span>' : ''}</td>
       <td><span class="badge tipo">${esc(d.Tipo||'—')}</span></td>
-      <td><span class="badge ${badgeClass}">${estadoLabel}</span>${vUrgente ? ' <span class="badge urgente">⚠ URGENTE</span>' : ''}</td>
-      <td>${esc(d.Asesor||'—')}</td>
+      <td><span class="badge ${badgeClass}">${estadoLabel}</span></td>
+      <td class="asesor-cell">${esc(d.Asesor||'—')}</td>
       <td class="desc-cell" title="${esc(d['Descripción']||d.Descripcion||'')}">${esc(truncar(d['Descripción']||d.Descripcion||'—', 80))}</td>
       <td>
         <button class="btn-expand" onclick="event.stopPropagation(); toggleSeg(${globalIdx})">
@@ -667,8 +776,12 @@ function filtrar() {
             <input type="text" id="seg-respuesta-${globalIdx}" value="${vRespuesta}" placeholder="¿Qué se le informó?" />
           </div>
           <div class="seg-group wide">
-            <label>Comentarios / observaciones de seguimiento</label>
-            <textarea id="seg-comentarios-${globalIdx}" placeholder="Gestiones realizadas, próximos pasos...">${vComentarios}</textarea>
+            <label>Historial de seguimiento</label>
+            ${vComentarios ? `<div class="seg-historial" id="seg-historial-${globalIdx}">${vComentarios}</div>` : `<div class="seg-historial vacio">Sin gestiones registradas todavía.</div>`}
+          </div>
+          <div class="seg-group wide">
+            <label>Agregar nueva gestión / comentario</label>
+            <textarea id="seg-nuevo-comentario-${globalIdx}" placeholder="¿Qué se hizo hoy? Se agregará al historial con la fecha automáticamente..."></textarea>
           </div>
           <div class="seg-group">
             <label>Urgencia</label>
@@ -713,9 +826,20 @@ async function guardarSeguimiento(globalIdx) {
   const estado     = document.getElementById(`seg-estado-${globalIdx}`).value;
   const tipo       = document.getElementById(`seg-tipo-${globalIdx}`).value;
   const asesorSeg  = document.getElementById(`seg-asesor-${globalIdx}`).value;
-  const comentarios = document.getElementById(`seg-comentarios-${globalIdx}`).value;
   const respuesta  = document.getElementById(`seg-respuesta-${globalIdx}`).value;
   const urgente    = document.getElementById(`seg-urgente-${globalIdx}`).checked ? 'Sí' : 'No';
+
+  // HISTORIAL ACUMULATIVO: la nueva entrada se agrega al historial existente con fecha
+  const historialPrevio = todosLosDatos[globalIdx]['comentarios seguimiento'] || '';
+  const nuevaEntrada = document.getElementById(`seg-nuevo-comentario-${globalIdx}`).value.trim();
+  let comentarios = historialPrevio;
+  if (nuevaEntrada) {
+    const hoy = new Date();
+    const fechaStr = String(hoy.getDate()).padStart(2,'0') + '/' + String(hoy.getMonth()+1).padStart(2,'0') + '/' + hoy.getFullYear();
+    const firma = asesorSeg ? ` — ${asesorSeg}` : '';
+    const entrada = `[${fechaStr}${firma}] ${nuevaEntrada}`;
+    comentarios = historialPrevio ? historialPrevio + '\n' + entrada : entrada;
+  }
 
   const btn = document.getElementById(`seg-btn-${globalIdx}`);
   const msg = document.getElementById(`seg-msg-${globalIdx}`);
