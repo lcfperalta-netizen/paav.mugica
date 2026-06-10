@@ -195,6 +195,9 @@ tr.seguimiento-row.open { display: table-row; }
 .urgente-check-wrap input[type=checkbox] { width: 17px; height: 17px; accent-color: #c4123f; cursor: pointer; }
 .urgente-check-wrap span { font-size: 13px; font-weight: 700; color: #c4123f; }
 .empty-msg { text-align: center; padding: 2rem; color: #aaa; font-size: 13px; }
+.recursero-wrap { border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; }
+.recursero-iframe { width: 100%; height: 520px; display: block; }
+@media (max-width: 700px) { .recursero-iframe { height: 420px; } }
 .loading-msg { text-align: center; padding: 2rem; color: #999; font-size: 13px; }
 
 /* Indicador de seguimiento cargado */
@@ -277,6 +280,7 @@ tr.seguimiento-row.open { display: table-row; }
     <button class="active" onclick="switchTab('carga', this)">+ Nueva consulta</button>
     <button onclick="switchTab('panel', this)">Panel de seguimiento</button>
     <button onclick="switchTab('stats', this)">Estadísticas</button>
+    <button onclick="switchTab('recursero', this)">Recursero</button>
   </div>
 
   <div class="main">
@@ -437,6 +441,27 @@ tr.seguimiento-row.open { display: table-row; }
           <tbody id="tabla-body"></tbody>
         </table>
         <div class="empty-msg" id="empty-msg" style="display:none">No hay consultas que coincidan con los filtros.</div>
+      </div>
+    </div>
+
+    <!-- RECURSERO -->
+    <div id="recursero" class="section">
+      <div class="form-card">
+        <h2>Recursero</h2>
+        <p style="font-size:13px;color:var(--gris);margin-bottom:1.25rem;">
+          Documentos, guías y recursos institucionales del PAAV. Hacé clic en un archivo para abrirlo.
+        </p>
+        <div class="recursero-wrap">
+          <iframe
+            src="https://drive.google.com/embeddedfolderview?id=1APP6KuMYRfHdwaDEdgB-gfeEkYhH5IqF#list"
+            class="recursero-iframe"
+            frameborder="0"
+            allowfullscreen>
+          </iframe>
+        </div>
+        <p style="font-size:11px;color:#bbb;margin-top:10px;">
+          Los archivos se abren en una pestaña nueva. Para agregar recursos, subí archivos directamente a la carpeta en Google Drive.
+        </p>
       </div>
     </div>
 
