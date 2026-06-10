@@ -645,7 +645,7 @@ tr.seguimiento-row.open { display: table-row; }
 
 <script>
 const PASS = "barrio2025";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnyfHCfqRL53PLL1TbJ97M-maRHhSN8jrnm5FWWDCvcP1M_fRtQQmC-DsvYObmUybC/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwMY7aNy5EgwT-0PqK1zhtvxd3LxiHJpHf92wBEXQKqQhdQMaS603YbR39TuyMUYslo/exec";
 
 // Mapeo de claves del sheet → nombres que usamos internamente
 // El sheet tiene: Fecha Nombre Apellido DNI Telefono Domicilio Tipo Asesor Estado Descripción
@@ -1138,8 +1138,8 @@ async function actualizarFichero() {
 
   try {
     const res = await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' }, // text/plain evita el preflight CORS
       body: JSON.stringify({ _accion: 'actualizarFichero' })
     });
     const data = await res.json();
@@ -1148,7 +1148,8 @@ async function actualizarFichero() {
     tot.textContent = data.total + ' vecinos en el fichero';
     tot.style.display = 'inline';
   } catch(e) {
-    alert('Error al actualizar el fichero. Verificá la conexión con el script.');
+    console.error(e);
+    alert('Error al actualizar el fichero. Verificá que el deploy del script sea público (Anyone).');
   }
   btn.disabled = false; spin.style.display = 'none';
 }
@@ -1206,8 +1207,8 @@ async function buscarVecino() {
   btn.disabled = true; spin.style.display = 'inline';
   try {
     const res = await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ _accion: 'buscarDNI', dni })
     });
     const data = await res.json();
@@ -1341,8 +1342,8 @@ async function agregarAlFichero() {
   btn.disabled = true; btn.textContent = 'Guardando...';
   try {
     const res = await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'cors',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST',
+      headers: { 'Content-Type': 'text/plain' },
       body: JSON.stringify({ _accion: 'agregarFichero', ...vecinoActual })
     });
     const data = await res.json();
