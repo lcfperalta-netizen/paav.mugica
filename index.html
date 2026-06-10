@@ -196,6 +196,33 @@ tr.seguimiento-row.open { display: table-row; }
 .urgente-check-wrap span { font-size: 13px; font-weight: 700; color: #c4123f; }
 .empty-msg { text-align: center; padding: 2rem; color: #aaa; font-size: 13px; }
 .recursero-wrap { border: 1px solid var(--borde); border-radius: 8px; overflow: hidden; }
+.vecino-bloque-titulo { font-size: 13px; font-weight: 700; color: var(--tinta); border-left: 4px solid var(--borde); padding-left: 10px; margin-bottom: 10px; }
+.vecino-card { background: var(--papel); border: 1px solid var(--borde); border-radius: 8px; padding: 14px 16px; margin-bottom: 8px; font-size: 13px; }
+.vecino-card-row { display: flex; gap: 6px; margin-bottom: 4px; flex-wrap: wrap; }
+.vecino-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gris); min-width: 100px; }
+.vecino-card-val { color: var(--tinta); flex: 1; }
+.vecino-badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
+.vecino-badge.paav { background: #ffe8ec; color: var(--rojo); }
+.vecino-badge.pj { background: #fff8e1; color: #856000; }
+.vecino-badge.juridicas { background: #e0f4f8; color: #0d5f75; }
+.vecino-badge.progresar { background: #e8f5e9; color: #1b5e20; }
+.vecino-badge.nada { background: #f0f0f0; color: #888; }
+.ficha-vecino { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.25rem 1.5rem; border-top: 4px solid var(--rojo); }
+.ficha-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1rem; flex-wrap: wrap; gap: 10px; }
+.ficha-nombre { font-size: 20px; font-weight: 700; color: var(--tinta); }
+.ficha-dni { font-size: 13px; color: var(--gris); margin-top: 2px; }
+.ficha-datos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+.ficha-dato { display: flex; flex-direction: column; gap: 2px; }
+.ficha-dato-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gris); }
+.ficha-dato-val { font-size: 13px; color: var(--tinta); }
+.btn-agregar-fichero { font-size: 13px; background: var(--verde); color: #fff; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer; font-weight: 700; }
+.btn-agregar-fichero:hover { background: #177a53; }
+.btn-agregar-fichero:disabled { background: #aaa; cursor: not-allowed; }
+.vecino-entry { border-bottom: 1px solid #f0f0f0; padding: 8px 0; font-size: 12.5px; }
+.vecino-entry:last-child { border-bottom: none; }
+.vecino-entry-titulo { font-weight: 700; color: var(--tinta); margin-bottom: 2px; font-size: 13px; }
+.vecino-entry-sub { color: var(--gris); font-size: 12px; }
+@media (max-width: 700px) { .ficha-datos { grid-template-columns: 1fr 1fr; } #vecino-grid-fuentes { grid-template-columns: 1fr; } }
 .recursero-iframe { width: 100%; height: 520px; display: block; }
 @media (max-width: 700px) { .recursero-iframe { height: 420px; } }
 .loading-msg { text-align: center; padding: 2rem; color: #999; font-size: 13px; }
@@ -281,6 +308,7 @@ tr.seguimiento-row.open { display: table-row; }
     <button onclick="switchTab('panel', this)">Panel de seguimiento</button>
     <button onclick="switchTab('stats', this)">Estadísticas</button>
     <button onclick="switchTab('recursero', this)">Recursero</button>
+    <button onclick="switchTab('vecinos', this)">Vecinos</button>
   </div>
 
   <div class="main">
@@ -444,6 +472,127 @@ tr.seguimiento-row.open { display: table-row; }
       </div>
     </div>
 
+    <!-- VECINOS -->
+    <div id="vecinos" class="section">
+
+      <!-- CABECERA: búsqueda + botón actualizar -->
+      <div class="form-card" style="margin-bottom:1rem;">
+        <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+          <div>
+            <h2 style="margin-bottom:4px;">Fichero de vecinos</h2>
+            <p style="font-size:13px;color:var(--gris);">
+              Vecinos que aparecen en 2 o más padrones. Se construye cruzando Consultas PAAV, PJ Mugica, Asesorías Jurídicas y Progresar.
+            </p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <span id="fichero-total" style="font-size:12px;color:var(--gris);display:none"></span>
+            <button class="btn-sec" onclick="actualizarFichero()" id="btn-actualizar-fichero">↻ Actualizar fichero</button>
+            <span id="fichero-cargando" style="font-size:13px;color:var(--gris);display:none">Calculando...</span>
+          </div>
+        </div>
+
+        <!-- Búsqueda por DNI individual -->
+        <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid var(--borde);">
+          <input type="text" id="vecino-dni" placeholder="Buscar DNI individual..." style="font-size:13px;padding:7px 11px;border:1px solid var(--borde);border-radius:6px;width:220px;" onkeydown="if(event.key==='Enter') buscarVecino()" />
+          <button class="btn-sec" onclick="buscarVecino()" id="btn-buscar-vecino">Buscar</button>
+          <span id="vecino-buscando" style="font-size:13px;color:var(--gris);display:none">Buscando...</span>
+        </div>
+      </div>
+
+      <!-- TABLA FICHERO -->
+      <div id="fichero-tabla-wrap" style="display:none;margin-bottom:1rem;">
+        <div class="table-wrap">
+          <table id="fichero-tabla">
+            <thead>
+              <tr>
+                <th>DNI</th>
+                <th>Nombre</th>
+                <th>Domicilio</th>
+                <th>Teléfono</th>
+                <th>Padrones</th>
+                <th>Fuentes</th>
+              </tr>
+            </thead>
+            <tbody id="fichero-tbody"></tbody>
+          </table>
+        </div>
+        <p id="fichero-vacio" style="display:none;text-align:center;padding:2rem;color:#aaa;font-size:13px;">
+          No se encontraron coincidencias en 2 o más padrones.
+        </p>
+      </div>
+
+      <!-- RESULTADOS -->
+      <div id="vecino-resultados" style="margin-top:1rem;display:none">
+
+        <!-- Ya está en el fichero -->
+        <div id="vecino-en-fichero" style="display:none;margin-bottom:1rem;">
+          <div style="background:#e8f5e9;border:1px solid #a5d6a7;border-radius:8px;padding:12px 16px;font-size:13px;color:#1b5e20;font-weight:600;">
+            ✓ Este vecino ya está en el fichero.
+          </div>
+        </div>
+
+        <!-- Sin resultados -->
+        <div id="vecino-sin-resultados" style="display:none;">
+          <div class="form-card" style="text-align:center;padding:2rem;color:#aaa;font-size:13px;">
+            No se encontraron registros para ese DNI en ningún padrón.
+          </div>
+        </div>
+
+        <!-- FICHA CONSOLIDADA -->
+        <div id="vecino-ficha" style="display:none;margin-bottom:1rem;">
+          <div class="ficha-vecino">
+            <div class="ficha-header">
+              <div>
+                <div class="ficha-nombre" id="ficha-nombre">—</div>
+                <div class="ficha-dni" id="ficha-dni">DNI —</div>
+              </div>
+              <div id="ficha-badges" style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"></div>
+            </div>
+            <div class="ficha-datos" id="ficha-datos"></div>
+            <div id="ficha-agregar-wrap" style="display:none;margin-top:12px;border-top:1px solid #e0e0e0;padding-top:12px;">
+              <button class="btn-agregar-fichero" id="btn-agregar-fichero" onclick="agregarAlFichero()">
+                + Agregar al fichero de vecinos
+              </button>
+              <span id="fichero-msg" style="font-size:12px;color:#1b5e20;margin-left:10px;display:none"></span>
+            </div>
+          </div>
+        </div>
+
+        <!-- HISTORIAL POR FUENTE -->
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;" id="vecino-grid-fuentes">
+
+          <div id="bloque-consultas" style="display:none;">
+            <div class="form-card" style="padding:1rem">
+              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--rojo)">Consultas PAAV</h3>
+              <div id="lista-consultas"></div>
+            </div>
+          </div>
+
+          <div id="bloque-juridicas" style="display:none;">
+            <div class="form-card" style="padding:1rem">
+              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--teal)">Asesorías Jurídicas</h3>
+              <div id="lista-juridicas"></div>
+            </div>
+          </div>
+
+          <div id="bloque-pj" style="display:none;">
+            <div class="form-card" style="padding:1rem">
+              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--amarillo)">Padrón PJ Mugica</h3>
+              <div id="lista-pj"></div>
+            </div>
+          </div>
+
+          <div id="bloque-progresar" style="display:none;">
+            <div class="form-card" style="padding:1rem">
+              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--verde)">Padrón Progresar</h3>
+              <div id="lista-progresar"></div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
     <!-- RECURSERO -->
     <div id="recursero" class="section">
       <div class="form-card">
@@ -505,6 +654,7 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwnyfHCfqRL53PLL1TbJ
 // El doGet devuelve objetos con los nombres de cabecera tal cual están en el sheet.
 
 let todosLosDatos = [];
+let vecinoActual = null; // datos del vecino encontrado para agregar al fichero
 
 function login() {
   const val = document.getElementById('pwd-input').value;
@@ -978,6 +1128,238 @@ function renderStats() {
       <span>${label} <strong>(${count})</strong></span>
     </div>`
   ).join('');
+}
+
+// ─── ACTUALIZAR FICHERO COMPLETO ──────────────────────────────────────────
+async function actualizarFichero() {
+  const btn  = document.getElementById('btn-actualizar-fichero');
+  const spin = document.getElementById('fichero-cargando');
+  btn.disabled = true; spin.style.display = 'inline';
+
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ _accion: 'actualizarFichero' })
+    });
+    const data = await res.json();
+    renderFicheroTabla(data.data || []);
+    const tot = document.getElementById('fichero-total');
+    tot.textContent = data.total + ' vecinos en el fichero';
+    tot.style.display = 'inline';
+  } catch(e) {
+    alert('Error al actualizar el fichero. Verificá la conexión con el script.');
+  }
+  btn.disabled = false; spin.style.display = 'none';
+}
+
+function renderFicheroTabla(rows) {
+  const wrap  = document.getElementById('fichero-tabla-wrap');
+  const tbody = document.getElementById('fichero-tbody');
+  const vacio = document.getElementById('fichero-vacio');
+  wrap.style.display = 'block';
+
+  if (!rows.length) {
+    tbody.innerHTML = '';
+    vacio.style.display = 'block';
+    document.getElementById('fichero-tabla').style.display = 'none';
+    return;
+  }
+
+  vacio.style.display = 'none';
+  document.getElementById('fichero-tabla').style.display = 'table';
+
+  const coloresFuente = { 'PAAV':'paav', 'PJ Mugica':'pj', 'Asesorías':'juridicas', 'Progresar':'progresar' };
+
+  tbody.innerHTML = rows.map(v => {
+    const badges = v.padrones.split(', ').map(p => {
+      const cls = coloresFuente[p.trim()] || '';
+      return `<span class="vecino-badge ${cls}" style="font-size:10px;padding:2px 7px">${esc(p.trim())}</span>`;
+    }).join(' ');
+    return `<tr class="main-row" onclick="buscarPorDNIDirecto('${esc(v.dni)}')">
+      <td style="font-weight:600">${esc(v.dni)}</td>
+      <td>${esc(v.nombre)}</td>
+      <td style="color:var(--gris);font-size:12px">${esc(v.domicilio||'—')}</td>
+      <td style="color:var(--gris);font-size:12px">${esc(v.telefono||'—')}</td>
+      <td>${badges}</td>
+      <td style="text-align:center"><span class="badge ${v.cant >= 3 ? 'resuelta' : 'en-proceso'}">${v.cant}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+function buscarPorDNIDirecto(dni) {
+  document.getElementById('vecino-dni').value = dni;
+  buscarVecino();
+  // Scroll a los resultados
+  setTimeout(() => {
+    const el = document.getElementById('vecino-resultados');
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 300);
+}
+
+// ─── BÚSQUEDA DE VECINO POR DNI ───────────────────────────────────────────
+async function buscarVecino() {
+  const dni = document.getElementById('vecino-dni').value.trim().replace(/\./g, '');
+  if (!dni) return;
+  const btn = document.getElementById('btn-buscar-vecino');
+  const spin = document.getElementById('vecino-buscando');
+  btn.disabled = true; spin.style.display = 'inline';
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ _accion: 'buscarDNI', dni })
+    });
+    const data = await res.json();
+    renderVecino(data, dni);
+  } catch(e) { alert('Error al buscar. Verificá la conexión con el script.'); }
+  btn.disabled = false; spin.style.display = 'none';
+}
+
+function renderVecino(data, dni) {
+  const wrap = document.getElementById('vecino-resultados');
+  wrap.style.display = 'block';
+  const total = (data.consultas||[]).length + (data.pj||[]).length +
+                (data.juridicas||[]).length + (data.progresar||[]).length;
+
+  // Sin resultados
+  document.getElementById('vecino-sin-resultados').style.display = total === 0 ? 'block' : 'none';
+  document.getElementById('vecino-ficha').style.display = total > 0 ? 'block' : 'none';
+
+  if (total === 0) { document.getElementById('vecino-en-fichero').style.display = 'none'; return; }
+
+  // ── Ya en fichero ──
+  const enFichero = (data.fichero||[]).length > 0;
+  document.getElementById('vecino-en-fichero').style.display = enFichero ? 'block' : 'none';
+
+  // ── Consolidar datos para la ficha ──
+  // Tomamos nombre del mejor registro disponible
+  let nombre = '—', domicilio = '—', telefono = '—';
+  const fuentesConResultados = [];
+
+  if (data.consultas?.length) {
+    const d = data.consultas[0];
+    nombre = [d.Nombre, d.Apellido].filter(Boolean).join(' ') || nombre;
+    domicilio = d.Domicilio || domicilio;
+    telefono  = d.Telefono  || telefono;
+    fuentesConResultados.push('paav');
+  }
+  if (data.juridicas?.length) {
+    const d = data.juridicas[0];
+    if (nombre === '—') nombre = d['Nombre y apellido del consultante'] || nombre;
+    if (domicilio === '—') domicilio = d['Domicilio (o referencia)'] || domicilio;
+    if (telefono === '—')  telefono  = d['Teléfono '] || d['Teléfono'] || telefono;
+    fuentesConResultados.push('juridicas');
+  }
+  if (data.pj?.length) {
+    const d = data.pj[0];
+    if (nombre === '—') nombre = [d.Nombre, d.Apellido].filter(Boolean).join(' ') || nombre;
+    if (domicilio === '—') domicilio = d.Domicilio || domicilio;
+    fuentesConResultados.push('pj');
+  }
+  if (data.progresar?.length) {
+    const d = data.progresar[0];
+    if (nombre === '—') nombre = d['Nombre y Apellido'] || nombre;
+    if (domicilio === '—') domicilio = d.Domicilio || domicilio;
+    if (telefono === '—')  telefono  = String(d['Teléfono ']||d['Teléfono']||'—');
+    fuentesConResultados.push('progresar');
+  }
+
+  // Guardar para el botón agregar
+  vecinoActual = { dni, nombre, domicilio, telefono, padrones: fuentesConResultados.join(', ') };
+
+  // Renderizar ficha
+  document.getElementById('ficha-nombre').textContent = nombre;
+  document.getElementById('ficha-dni').textContent = 'DNI ' + dni;
+
+  const colores = { paav:'var(--rojo)', juridicas:'var(--teal)', pj:'var(--amarillo)', progresar:'var(--verde)' };
+  const etiquetas = { paav:'PAAV', juridicas:'Asesorías', pj:'PJ Mugica', progresar:'Progresar' };
+  const clases = { paav:'paav', juridicas:'juridicas', pj:'pj', progresar:'progresar' };
+  document.getElementById('ficha-badges').innerHTML = fuentesConResultados
+    .map(f => `<span class="vecino-badge ${clases[f]}">${etiquetas[f]}</span>`).join('');
+
+  document.getElementById('ficha-datos').innerHTML = `
+    <div class="ficha-dato"><span class="ficha-dato-label">Domicilio</span><span class="ficha-dato-val">${esc(domicilio)}</span></div>
+    <div class="ficha-dato"><span class="ficha-dato-label">Teléfono</span><span class="ficha-dato-val">${esc(telefono)}</span></div>
+    <div class="ficha-dato"><span class="ficha-dato-label">Aparece en</span><span class="ficha-dato-val">${fuentesConResultados.length} fuente${fuentesConResultados.length > 1 ? 's' : ''}</span></div>
+  `;
+
+  // Botón agregar al fichero: solo si hay 2+ fuentes y no está ya en el fichero
+  const wrap2 = document.getElementById('ficha-agregar-wrap');
+  wrap2.style.display = (fuentesConResultados.length >= 2 && !enFichero) ? 'block' : 'none';
+  document.getElementById('fichero-msg').style.display = 'none';
+
+  // ── Historial por fuente ──
+  const bloqC = document.getElementById('bloque-consultas');
+  if (data.consultas?.length) {
+    bloqC.style.display = 'block';
+    document.getElementById('lista-consultas').innerHTML = data.consultas.map(d => `
+      <div class="vecino-entry">
+        <div class="vecino-entry-titulo">${esc(String(d.Fecha||'').replace(/T.*/,''))} · ${esc(d.Tipo||'—')}</div>
+        <div class="vecino-entry-sub">Estado: ${esc(d.Estado||'—')} · Asesor: ${esc(d.Asesor||'—')}</div>
+        ${d['Descripción'] ? `<div class="vecino-entry-sub" style="margin-top:3px">${esc(truncar(d['Descripción'],100))}</div>` : ''}
+      </div>`).join('');
+  } else bloqC.style.display = 'none';
+
+  const bloqJ = document.getElementById('bloque-juridicas');
+  if (data.juridicas?.length) {
+    bloqJ.style.display = 'block';
+    document.getElementById('lista-juridicas').innerHTML = data.juridicas.map(d => `
+      <div class="vecino-entry">
+        <div class="vecino-entry-titulo">${esc(String(d['Marca temporal']||'').split(' ')[0])} · ${esc(d['Tema de consulta']||'—')}</div>
+        <div class="vecino-entry-sub">${esc(truncar(d['Descripción del caso ']||d['Descripción del caso']||'',100))}</div>
+      </div>`).join('');
+  } else bloqJ.style.display = 'none';
+
+  const bloqPJ = document.getElementById('bloque-pj');
+  if (data.pj?.length) {
+    bloqPJ.style.display = 'block';
+    document.getElementById('lista-pj').innerHTML = data.pj.map(d => `
+      <div class="vecino-entry">
+        <div class="vecino-entry-titulo">${esc(d.Nombre||'')} ${esc(d.Apellido||'')}</div>
+        <div class="vecino-entry-sub">${esc(d.Domicilio||'—')} · Afil: ${esc(d['Estado Afiliación']||'—')}</div>
+      </div>`).join('');
+  } else bloqPJ.style.display = 'none';
+
+  const bloqPr = document.getElementById('bloque-progresar');
+  if (data.progresar?.length) {
+    bloqPr.style.display = 'block';
+    document.getElementById('lista-progresar').innerHTML = data.progresar.map(d => `
+      <div class="vecino-entry">
+        <div class="vecino-entry-titulo">${esc(d['Nombre y Apellido']||'—')}</div>
+        <div class="vecino-entry-sub">${esc(d.Domicilio||'—')} · ${esc(String(d['Teléfono ']||d['Teléfono']||'—'))}</div>
+        ${d['Correo Electrónico'] ? `<div class="vecino-entry-sub">${esc(d['Correo Electrónico'])}</div>` : ''}
+      </div>`).join('');
+  } else bloqPr.style.display = 'none';
+}
+
+// ─── AGREGAR AL FICHERO ────────────────────────────────────────────────────
+async function agregarAlFichero() {
+  if (!vecinoActual) return;
+  const btn = document.getElementById('btn-agregar-fichero');
+  const msg = document.getElementById('fichero-msg');
+  btn.disabled = true; btn.textContent = 'Guardando...';
+  try {
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST', mode: 'cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ _accion: 'agregarFichero', ...vecinoActual })
+    });
+    const data = await res.json();
+    if (data.creado) {
+      msg.textContent = '✓ Agregado al fichero';
+      msg.style.color = '#1b5e20';
+      document.getElementById('ficha-agregar-wrap').style.display = 'none';
+      document.getElementById('vecino-en-fichero').style.display = 'block';
+    } else {
+      msg.textContent = data.msg || 'Ya existe';
+    }
+    msg.style.display = 'inline';
+  } catch(e) {
+    msg.textContent = '✗ Error al guardar'; msg.style.color = '#b71c1c';
+    msg.style.display = 'inline';
+  }
+  btn.disabled = false; btn.textContent = '+ Agregar al fichero de vecinos';
 }
 
 // ─── EXPORTAR CASO INDIVIDUAL COMO EXCEL ──────────────────────────────────
