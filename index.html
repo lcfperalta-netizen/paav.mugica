@@ -645,7 +645,7 @@ tr.seguimiento-row.open { display: table-row; }
 
 <script>
 const PASS = "barrio2025";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbydF1qIJPEqvv7Kj1Z1_QO3-VohU4w6RgqJM7thvuPWJTQMyv53pMB3tGQy_1mAWZ21/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybkkCD_h3ftl9BLhZzsAq-om1_6---_ujivVAGLMnu0q0GA-IXw0J80G3n1H8k826N/exec";
 
 // Mapeo de claves del sheet → nombres que usamos internamente
 // El sheet tiene: Fecha Nombre Apellido DNI Telefono Domicilio Tipo Asesor Estado Descripción
@@ -693,11 +693,13 @@ async function guardarConsulta() {
   const url = SCRIPT_URL;
   const beneficio = document.getElementById('f-beneficio').value;
   const beneficioCual = document.getElementById('f-beneficio-cual').value;
+  // Fix 3: DNI se guarda solo con dígitos, sin puntos ni espacios
+  const normDNI = v => v.trim().replace(/[\.\s\-]/g, '');
   const data = {
     fecha:       document.getElementById('f-fecha').value,
     nombre:      document.getElementById('f-nombre').value,
     apellido:    document.getElementById('f-apellido').value,
-    dni:         document.getElementById('f-dni').value,
+    dni:         normDNI(document.getElementById('f-dni').value),
     telefono:    document.getElementById('f-tel').value,
     domicilio:   document.getElementById('f-domicilio').value,
     tipo:        document.getElementById('f-tipo').value,
@@ -712,11 +714,17 @@ async function guardarConsulta() {
   const btn = document.getElementById('btn-guardar');
   btn.disabled = true; btn.textContent = 'Guardando...';
   try {
-    await fetch(url, { method: 'POST', mode: 'no-cors', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
-    showMsg('ok');
-    ['f-nombre','f-apellido','f-dni','f-tel','f-domicilio','f-desc','f-beneficio-cual'].forEach(id => document.getElementById(id).value = '');
-    ['f-tipo','f-extranjero','f-jubilado','f-beneficio'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('f-beneficio-cual-wrap').style.display = 'none';
+    // Fix 4: text/plain evita el preflight CORS y permite leer la respuesta real
+    const res = await fetch(url, { method: 'POST', headers: {'Content-Type':'text/plain'}, body: JSON.stringify(data) });
+    const result = await res.json();
+    if (result.ok) {
+      showMsg('ok');
+      ['f-nombre','f-apellido','f-dni','f-tel','f-domicilio','f-desc','f-beneficio-cual'].forEach(id => document.getElementById(id).value = '');
+      ['f-tipo','f-extranjero','f-jubilado','f-beneficio'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-beneficio-cual-wrap').style.display = 'none';
+    } else {
+      showMsg('err', result.error || 'No se pudo guardar. Verificá la URL del script.');
+    }
   } catch(e) { showMsg('err'); }
   btn.disabled = false; btn.textContent = 'Guardar consulta';
 }
@@ -785,13 +793,15 @@ function filtrar() {
   const busqueda  = document.getElementById('fil-busqueda').value.trim().toLowerCase();
   const norm = v => (v||'').toString().trim().toLowerCase();
 
+  // Fix 3: normalizar DNI para búsqueda (ignora puntos, espacios, guiones)
+  const normDNI = v => (v||'').toString().replace(/[\.\s\-]/g, '').toLowerCase();
   let filtrados = todosLosDatos.filter(d =>
     (!filTipo   || d.Tipo  === filTipo) &&
     (!filEstado || norm(d.Estado) === filEstado) &&
     (!busqueda  ||
       norm(d.Nombre).includes(busqueda) ||
       norm(d.Apellido).includes(busqueda) ||
-      norm(d.DNI).includes(busqueda) ||
+      normDNI(d.DNI).includes(normDNI(busqueda)) ||
       (norm(d.Nombre) + ' ' + norm(d.Apellido)).includes(busqueda)
     )
   );
@@ -1023,6 +1033,9 @@ async function guardarSeguimiento(globalIdx) {
   const payload = {
     _accion: 'update',
     _idx: filaSheet,
+    // Fix 2: DNI y Fecha viajan para que el script verifique que escribe en la fila correcta
+    _dni:   (todosLosDatos[globalIdx].DNI || '').toString().replace(/[\.\s\-]/g, ''),
+    _fecha: todosLosDatos[globalIdx].Fecha || '',
     estado: estado,
     tipo: tipo,
     urgente: urgente,
@@ -1032,11 +1045,21 @@ async function guardarSeguimiento(globalIdx) {
   };
 
   try {
-    await fetch(SCRIPT_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type':'application/json'},
+    // Fix 4: text/plain evita el preflight CORS y permite leer la respuesta real
+    const res = await fetch(SCRIPT_URL, {
+      method: 'POST',
+      headers: {'Content-Type':'text/plain'},
       body: JSON.stringify(payload)
     });
+    const result = await res.json();
+    if (!result.ok) {
+      // El script rechazó la operación (ej: fila no coincide con el DNI)
+      msg.textContent = '✗ ' + (result.error || 'Error al guardar. Recargá los datos.');
+      msg.className = 'seg-msg err';
+      msg.style.display = 'inline';
+      btn.disabled = false; btn.textContent = 'Guardar seguimiento';
+      return;
+    }
     // Actualizar datos locales para que la UI refleje el cambio
     todosLosDatos[globalIdx].Estado   = estado;
     todosLosDatos[globalIdx].Tipo     = tipo;
