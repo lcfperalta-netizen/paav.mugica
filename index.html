@@ -3,18 +3,24 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PAAV — Punto de Asesoramiento y Acompañamiento Vecinal</title>
+<title>PAAD — Punto de Apoyo y Acceso a Derechos</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
-  --rojo: #C4123F;
-  --amarillo: #F4B915;
-  --verde: #1E9E6A;
-  --teal: #1B8FA6;
-  --papel: #F7F4EC;
+  /* === Propuesta A — marca === */
+  --azul: #339CFF;          /* azul de marca (acentos, foco, activo) */
+  --verde-eco: #2FD666;     /* verde de marca (secundario) */
+  --rojo: #1B7FE0;          /* (compat) ahora apunta a un azul fuerte legible: superficies con texto blanco */
+  --alerta: #C4123F;        /* rojo SOLO para urgencias / errores */
+  /* === colores de estado (NO son decorativos, codifican información) === */
+  --amarillo: #F4B915;      /* estado: pendiente */
+  --verde: #1E9E6A;         /* estado: resuelta */
+  --teal: #1B8FA6;          /* estado: en proceso */
+  /* === neutros === */
+  --papel: #F4F7FB;         /* fondo claro y frío: blanco preponderante */
   --tinta: #1A1A1A;
   --gris: #6b6b6b;
-  --borde: #ddd;
+  --borde: #e2e6ec;
   --blanco: #fff;
 }
 body { font-family: Arial, sans-serif; background: var(--papel); color: var(--tinta); font-size: 14px; }
@@ -28,7 +34,7 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
 .login-card p { font-size: 12px; color: var(--gris); margin-bottom: 1.5rem; }
 .login-card label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gris); display: block; margin-bottom: 4px; }
 .login-card input { width: 100%; padding: 9px 11px; border: 1px solid var(--borde); border-radius: 6px; font-size: 14px; margin-bottom: 1rem; }
-.login-error { font-size: 12px; color: var(--rojo); margin-bottom: 0.75rem; display: none; }
+.login-error { font-size: 12px; color: var(--alerta); margin-bottom: 0.75rem; display: none; }
 
 /* APP */
 #app-screen { display: none; min-height: 100vh; }
@@ -54,7 +60,7 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
 
 /* FORM */
 .form-card { background: var(--blanco); border: 1px solid var(--borde); border-radius: 10px; padding: 1.5rem; }
-.form-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 1.25rem; color: var(--tinta); border-bottom: 2px solid var(--amarillo); padding-bottom: 8px; display: inline-block; }
+.form-card h2 { font-size: 15px; font-weight: 700; margin-bottom: 1.25rem; color: var(--tinta); border-bottom: 2px solid var(--verde-eco); padding-bottom: 8px; display: inline-block; }
 .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
 .form-group { display: flex; flex-direction: column; gap: 4px; }
 .form-group.full { grid-column: 1 / -1; }
@@ -64,11 +70,11 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
   background: var(--blanco); color: var(--tinta); width: 100%;
 }
 .form-group input:focus, .form-group select:focus, .form-group textarea:focus {
-  outline: none; border-color: var(--teal);
+  outline: none; border-color: var(--azul);
 }
 .form-group textarea { resize: vertical; min-height: 80px; }
 .btn-primary { background: var(--rojo); color: var(--blanco); border: none; padding: 10px 24px; border-radius: 6px; cursor: pointer; font-size: 14px; font-weight: 700; margin-top: 1rem; }
-.btn-primary:hover { background: #a30f34; }
+.btn-primary:hover { background: #156fc9; }
 .btn-primary:disabled { background: #ccc; cursor: not-allowed; }
 .msg { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 1rem; display: none; }
 .msg.ok { background: #e8f5e9; color: #1b5e20; border: 1px solid #a5d6a7; }
@@ -81,14 +87,14 @@ body { font-family: Arial, sans-serif; background: var(--papel); color: var(--ti
 .metric-card.pendiente { border-top-color: var(--amarillo); }
 .metric-card.proceso { border-top-color: var(--teal); }
 .metric-card.resuelta { border-top-color: var(--verde); }
-.metric-card.urgentes { border-top-color: var(--rojo); }
-.metric-card.urgentes .metric-value { color: var(--rojo); }
+.metric-card.urgentes { border-top-color: var(--alerta); }
+.metric-card.urgentes .metric-value { color: var(--alerta); }
 .metric-label { font-size: 11px; color: var(--gris); margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.05em; font-weight: 700; }
 .metric-value { font-size: 28px; font-weight: 700; color: var(--tinta); }
 .filters { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; align-items: center; }
 .filters select { font-size: 13px; padding: 6px 10px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); }
 .busqueda-input { font-size: 13px; padding: 7px 12px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); width: 280px; }
-.busqueda-input:focus { outline: none; border-color: var(--teal); }
+.busqueda-input:focus { outline: none; border-color: var(--azul); }
 @media (max-width: 700px) { .busqueda-input { width: 100%; } }
 .btn-sec { font-size: 12px; padding: 6px 12px; border: 1px solid var(--borde); border-radius: 6px; background: var(--blanco); cursor: pointer; font-weight: 600; color: var(--tinta); }
 .btn-sec:hover { background: var(--papel); }
@@ -106,16 +112,16 @@ tr.main-row td.nombre-cell { font-weight: 600; color: var(--tinta); }
 tr.main-row td.fecha-cell { color: var(--gris); font-size: 12px; white-space: nowrap; }
 
 /* FILA DE SEGUIMIENTO (expandible) */
-tr.seguimiento-row td { background: #fafafa; border-bottom: 3px solid #e0d8f5; padding: 0; }
+tr.seguimiento-row td { background: #fafafa; border-bottom: 3px solid #cfe3ff; padding: 0; }
 tr.seguimiento-row { display: none; }
 tr.seguimiento-row.open { display: table-row; }
 .seg-panel { padding: 0; }
-.seg-datos-consulta { background: #f0ecff; border-bottom: 1px solid #ddd6f5; padding: 14px 20px; display: grid; grid-template-columns: repeat(4, auto) 1fr; gap: 0 28px; align-items: start; }
+.seg-datos-consulta { background: #eaf3ff; border-bottom: 1px solid #d5e8fb; padding: 14px 20px; display: grid; grid-template-columns: repeat(4, auto) 1fr; gap: 0 28px; align-items: start; }
 .seg-dato-item { display: flex; flex-direction: column; gap: 2px; }
-.seg-dato-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; }
+.seg-dato-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2b7fd0; }
 .seg-dato-val { font-size: 13px; color: var(--tinta); }
-.seg-desc-area { background: #f0ecff; border-bottom: 1px solid #ddd6f5; padding: 10px 20px 14px; }
-.seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #7b6bb0; margin-bottom: 5px; }
+.seg-desc-area { background: #eaf3ff; border-bottom: 1px solid #d5e8fb; padding: 10px 20px 14px; }
+.seg-desc-header { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #2b7fd0; margin-bottom: 5px; }
 .seg-desc-box { font-size: 13px; color: var(--tinta); line-height: 1.6; white-space: pre-wrap; word-break: break-word; }
 .seg-historial { font-size: 12.5px; color: var(--tinta); line-height: 1.7; white-space: pre-wrap; word-break: break-word; background: var(--blanco); border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px 13px; max-height: 180px; overflow-y: auto; }
 .seg-historial.vacio { color: #aaa; font-style: italic; }
@@ -152,7 +158,7 @@ tr.seguimiento-row.open { display: table-row; }
   tr.main-row td.nombre-cell { font-size: 15px; font-weight: 700; margin-bottom: 4px; }
   tr.main-row td.desc-cell { font-size: 12px; color: var(--gris); max-width: 100%; white-space: normal; margin-top: 4px; }
   tr.main-row td:last-child { margin-top: 8px; display: flex; gap: 6px; flex-wrap: wrap; }
-  tr.seguimiento-row td { border-radius: 0 0 8px 8px; margin-top: -8px; margin-bottom: 8px; border: 1px solid #e0d8f5; border-top: none; }
+  tr.seguimiento-row td { border-radius: 0 0 8px 8px; margin-top: -8px; margin-bottom: 8px; border: 1px solid #cfe3ff; border-top: none; }
   .table-wrap { border: none; background: transparent; overflow-x: visible; }
   table { width: 100%; }
   /* PANEL EXPANDIBLE */
@@ -172,11 +178,11 @@ tr.seguimiento-row.open { display: table-row; }
   font-size: 13px; padding: 7px 10px; border: 1px solid #ddd; border-radius: 5px;
   background: var(--blanco); color: var(--tinta); width: 100%;
 }
-.seg-group input:focus, .seg-group select:focus, .seg-group textarea:focus { outline: none; border-color: #9b7fe0; }
+.seg-group input:focus, .seg-group select:focus, .seg-group textarea:focus { outline: none; border-color: var(--azul); }
 .seg-group textarea { resize: vertical; min-height: 65px; }
 .seg-actions { grid-column: 1 / -1; display: flex; gap: 10px; align-items: center; padding-top: 4px; }
-.btn-guardar-seg { font-size: 13px; background: #5c3bc2; color: #fff; border: none; padding: 8px 22px; border-radius: 5px; cursor: pointer; font-weight: 700; }
-.btn-guardar-seg:hover { background: #4a2ea0; }
+.btn-guardar-seg { font-size: 13px; background: var(--verde); color: #fff; border: none; padding: 8px 22px; border-radius: 5px; cursor: pointer; font-weight: 700; }
+.btn-guardar-seg:hover { background: #15784f; }
 .btn-guardar-seg:disabled { background: #aaa; cursor: not-allowed; }
 .seg-msg { font-size: 12px; color: #1b5e20; display: none; }
 .seg-msg.err { color: #b71c1c; }
@@ -202,7 +208,7 @@ tr.seguimiento-row.open { display: table-row; }
 .vecino-card-label { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.04em; color: var(--gris); min-width: 100px; }
 .vecino-card-val { color: var(--tinta); flex: 1; }
 .vecino-badge { display: inline-block; font-size: 12px; font-weight: 700; padding: 4px 12px; border-radius: 20px; }
-.vecino-badge.paav { background: #ffe8ec; color: var(--rojo); }
+.vecino-badge.paav { background: #e7f1ff; color: var(--rojo); }
 .vecino-badge.pj { background: #fff8e1; color: #856000; }
 .vecino-badge.juridicas { background: #e0f4f8; color: #0d5f75; }
 .vecino-badge.progresar { background: #e8f5e9; color: #1b5e20; }
@@ -233,8 +239,8 @@ tr.seguimiento-row.open { display: table-row; }
 .seg-indicator.vacio { background: #ddd; }
 
 /* Botón expandir */
-.btn-expand { font-size: 11px; background: none; border: 1px solid #c9bef0; color: #5c3bc2; padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
-.btn-expand:hover { background: #f0ecff; }
+.btn-expand { font-size: 11px; background: none; border: 1px solid #bcd9fb; color: var(--azul); padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; }
+.btn-expand:hover { background: #eaf3ff; }
 .btn-xls { font-size: 11px; background: none; border: 1px solid #b8ddb0; color: #1E9E6A; padding: 3px 8px; border-radius: 4px; cursor: pointer; white-space: nowrap; margin-left: 4px; }
 .btn-xls:hover { background: #edf7eb; }
 /* Estilos tarjeta mobile */
@@ -272,13 +278,25 @@ tr.seguimiento-row.open { display: table-row; }
 <div id="login-screen">
   <div class="login-card">
     <div class="login-logo">
-      <div class="dot" style="background:var(--rojo)"></div>
-      <div class="dot" style="background:var(--amarillo)"></div>
-      <div class="dot" style="background:var(--verde)"></div>
-      <div class="dot" style="background:var(--teal)"></div>
+      <svg width="54" height="54" viewBox="0 0 240 240" aria-hidden="true">
+        <defs>
+          <linearGradient id="ecoGrad" x1="0" y1="1" x2="1" y2="0">
+            <stop offset="0" stop-color="#2FD666"/>
+            <stop offset="1" stop-color="#339CFF"/>
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="240" height="240" rx="52" fill="url(#ecoGrad)"/>
+        <g transform="translate(120,120) scale(0.6)" fill="#ffffff">
+          <path transform="rotate(90)"  d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+          <path transform="rotate(162)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+          <path transform="rotate(234)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+          <path transform="rotate(306)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+          <path transform="rotate(18)"  d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+        </g>
+      </svg>
     </div>
-    <h1>PAAV</h1>
-    <p>Punto de Asesoramiento y Acompañamiento Vecinal</p>
+    <h1>PAAD</h1>
+    <p>Punto de Apoyo y Acceso a Derechos</p>
     <label>Contraseña de acceso</label>
     <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()" />
     <div class="login-error" id="login-error">Contraseña incorrecta.</div>
@@ -291,13 +309,19 @@ tr.seguimiento-row.open { display: table-row; }
   <div class="topbar">
     <div class="topbar-left">
       <div class="topbar-dots">
-        <span style="background:var(--amarillo)"></span>
-        <span style="background:var(--verde)"></span>
-        <span style="background:var(--teal)"></span>
+        <svg width="30" height="30" viewBox="0 0 240 240" aria-hidden="true">
+          <g transform="translate(120,120)" fill="#ffffff">
+            <path transform="rotate(90)"  d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+            <path transform="rotate(162)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+            <path transform="rotate(234)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+            <path transform="rotate(306)" d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+            <path transform="rotate(18)"  d="M0,-10 C-22.32,-45.96 -36,-57.68 -36,-62 A36,36 0 0 1 36,-62 C36,-57.68 22.32,-45.96 0,-10 Z"/>
+          </g>
+        </svg>
       </div>
       <div>
         <div class="topbar-sub">Comunidades</div>
-        <h1>PAAV — Punto de Asesoramiento y Acompañamiento Vecinal</h1>
+        <h1>PAAD — Punto de Apoyo y Acceso a Derechos</h1>
       </div>
     </div>
     <button onclick="logout()">Salir</button>
@@ -598,7 +622,7 @@ tr.seguimiento-row.open { display: table-row; }
       <div class="form-card">
         <h2>Recursero</h2>
         <p style="font-size:13px;color:var(--gris);margin-bottom:1.25rem;">
-          Documentos, guías y recursos institucionales del PAAV. Hacé clic en un archivo para abrirlo.
+          Documentos, guías y recursos institucionales del PAAD. Hacé clic en un archivo para abrirlo.
         </p>
         <div class="recursero-wrap">
           <iframe
@@ -1114,7 +1138,7 @@ function renderStats() {
     ).join('');
   }
 
-  renderBars('bars-tipo',   contarPor('Tipo'),   '#C4123F');
+  renderBars('bars-tipo',   contarPor('Tipo'),   '#339CFF');
   renderBars('bars-asesor', contarPor('Asesor'), '#1B8FA6');
 
   const meses = {};
@@ -1429,7 +1453,7 @@ function exportarCasoXLS(globalIdx) {
   const apellido = (d.Apellido || 'caso').replace(/\s+/g, '_');
   const nombre   = (d.Nombre   || '').replace(/\s+/g, '_');
   const fecha    = String(d.Fecha || '').replace(/T.*/, '');
-  const filename = `PAAV_${apellido}_${nombre}_${fecha}.xlsx`;
+  const filename = `PAAD_${apellido}_${nombre}_${fecha}.xlsx`;
 
   XLSX.writeFile(wb, filename);
 }
@@ -1443,7 +1467,7 @@ function exportarCSV() {
   const blob = new Blob(['\ufeff'+csv], {type:'text/csv;charset=utf-8;'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = 'paav_consultas_' + new Date().toISOString().slice(0,10) + '.csv';
+  a.download = 'paad_consultas_' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
 }
 </script>
