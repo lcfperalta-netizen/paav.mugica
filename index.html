@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>PAAD — Punto de Apoyo y Acceso a Derechos</title>
+<title>PAAD — Punto de Asesoramiento y Acceso a Derechos</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 :root {
@@ -191,6 +191,7 @@ tr.seguimiento-row.open { display: table-row; }
 .badge.pendiente { background: #fff8e1; color: #856000; }
 .badge.en-proceso { background: #e0f4f8; color: #0d5f75; }
 .badge.resuelta { background: #e8f5e9; color: #1b5e20; }
+.badge.derivado-a-organismo { background: #ede7f6; color: #4527a0; }
 .badge.tipo { background: var(--papel); color: var(--gris); }
 .badge.urgente { background: #fff0f0; color: #c4123f; border: 1.5px solid #f5a0a0; font-weight: 800; letter-spacing: 0.03em; }
 .dias-badge { font-size: 10px; font-weight: 700; padding: 1px 7px; border-radius: 12px; white-space: nowrap; }
@@ -296,7 +297,7 @@ tr.seguimiento-row.open { display: table-row; }
       </svg>
     </div>
     <h1>PAAD</h1>
-    <p>Punto de Apoyo y Acceso a Derechos</p>
+    <p>Punto de Asesoramiento y Acceso a Derechos</p>
     <label>Contraseña de acceso</label>
     <input type="password" id="pwd-input" placeholder="••••••••" onkeydown="if(event.key==='Enter') login()" />
     <div class="login-error" id="login-error">Contraseña incorrecta.</div>
@@ -321,7 +322,7 @@ tr.seguimiento-row.open { display: table-row; }
       </div>
       <div>
         <div class="topbar-sub">Comunidades</div>
-        <h1>PAAD — Punto de Apoyo y Acceso a Derechos</h1>
+        <h1>PAAD — Punto de Asesoramiento y Acceso a Derechos</h1>
       </div>
     </div>
     <button onclick="logout()">Salir</button>
@@ -361,6 +362,10 @@ tr.seguimiento-row.open { display: table-row; }
           <div class="form-group">
             <label>DNI</label>
             <input type="text" id="f-dni" placeholder="00.000.000" />
+          </div>
+          <div class="form-group">
+            <label>Fecha de nacimiento</label>
+            <input type="date" id="f-nacimiento" />
           </div>
           <div class="form-group">
             <label>Teléfono</label>
@@ -471,6 +476,7 @@ tr.seguimiento-row.open { display: table-row; }
           <option value="">Todos los estados</option>
           <option value="pendiente">Pendiente</option>
           <option value="en-proceso">En proceso</option>
+          <option value="derivado-a-organismo">Derivado a organismo</option>
           <option value="resuelta">Resuelta</option>
         </select>
         <button class="btn-sec" onclick="cargarDatos()">↻ Actualizar</button>
@@ -505,7 +511,7 @@ tr.seguimiento-row.open { display: table-row; }
           <div>
             <h2 style="margin-bottom:4px;">Fichero de vecinos</h2>
             <p style="font-size:13px;color:var(--gris);">
-              Vecinos que aparecen en 2 o más padrones. Se construye cruzando Consultas PAAV, PJ Mugica, Asesorías Jurídicas y Progresar.
+              Vecinos que aparecen en 2 o más padrones. Se construye cruzando Consultas PAAD, PJ Mugica, Asesorías Jurídicas y Progresar.
             </p>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
@@ -587,7 +593,7 @@ tr.seguimiento-row.open { display: table-row; }
 
           <div id="bloque-consultas" style="display:none;">
             <div class="form-card" style="padding:1rem">
-              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--rojo)">Consultas PAAV</h3>
+              <h3 class="vecino-bloque-titulo" style="border-left-color:var(--rojo)">Consultas PAAD</h3>
               <div id="lista-consultas"></div>
             </div>
           </div>
@@ -669,7 +675,7 @@ tr.seguimiento-row.open { display: table-row; }
 
 <script>
 const PASS = "barrio2025";
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbybkkCD_h3ftl9BLhZzsAq-om1_6---_ujivVAGLMnu0q0GA-IXw0J80G3n1H8k826N/exec";
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxVz47zVZ8cSbWTFFlKBIv-H5dH7tZJ4354lgOQFpRY424MrOCeKLdFe_CA8eUvLzvo/exec";
 
 // Mapeo de claves del sheet → nombres que usamos internamente
 // El sheet tiene: Fecha Nombre Apellido DNI Telefono Domicilio Tipo Asesor Estado Descripción
@@ -724,6 +730,7 @@ async function guardarConsulta() {
     nombre:      document.getElementById('f-nombre').value,
     apellido:    document.getElementById('f-apellido').value,
     dni:         normDNI(document.getElementById('f-dni').value),
+    nacimiento:  document.getElementById('f-nacimiento').value,
     telefono:    document.getElementById('f-tel').value,
     domicilio:   document.getElementById('f-domicilio').value,
     tipo:        document.getElementById('f-tipo').value,
@@ -743,7 +750,7 @@ async function guardarConsulta() {
     const result = await res.json();
     if (result.ok) {
       showMsg('ok');
-      ['f-nombre','f-apellido','f-dni','f-tel','f-domicilio','f-desc','f-beneficio-cual'].forEach(id => document.getElementById(id).value = '');
+      ['f-nombre','f-apellido','f-dni','f-nacimiento','f-tel','f-domicilio','f-desc','f-beneficio-cual'].forEach(id => document.getElementById(id).value = '');
       ['f-tipo','f-extranjero','f-jubilado','f-beneficio'].forEach(id => document.getElementById(id).value = '');
       document.getElementById('f-beneficio-cual-wrap').style.display = 'none';
     } else {
@@ -786,6 +793,7 @@ async function cargarDatos() {
       n['Asesor seguimiento']      = find(d, 'asesor seguimiento');
       n['comentarios seguimiento'] = find(d, 'comentarios seguimiento');
       n['Respuesta Consultante']   = find(d, 'respuesta consultante');
+      n['Contacto Organismo']      = find(d, 'contacto organismo');
       n['Estado']                  = find(d, 'estado') || 'pendiente';
       n['Descripción']             = find(d, 'descripción', 'descripcion');
       return n;
@@ -830,9 +838,9 @@ function filtrar() {
     )
   );
 
-  // ORDENAMIENTO: urgentes primero, luego por estado (pendientes > en proceso > resueltas),
+  // ORDENAMIENTO: urgentes primero, luego por estado (pendientes > en proceso > derivado a organismo > resueltas),
   // y dentro de cada grupo, los más viejos primero (más días esperando = más arriba)
-  const pesoEstado = { 'pendiente': 0, 'en-proceso': 1, 'resuelta': 2 };
+  const pesoEstado = { 'pendiente': 0, 'en-proceso': 1, 'derivado-a-organismo': 2, 'resuelta': 3 };
   const esUrgente = d => {
     const u = norm(d.Urgente);
     return u === 'sí' || u === 'si';
@@ -863,15 +871,17 @@ function filtrar() {
     const globalIdx = todosLosDatos.indexOf(d);   // índice real → fila en sheet = globalIdx + 2
     const estadoVal = norm(d.Estado);
     const badgeClass = estadoVal === 'en-proceso' ? 'en-proceso' : estadoVal;
-    const estadoLabel = estadoVal === 'en-proceso' ? 'En proceso' : estadoVal === 'resuelta' ? 'Resuelta' : 'Pendiente';
+    const estadoLabel = estadoVal === 'en-proceso' ? 'En proceso' : estadoVal === 'derivado-a-organismo' ? 'Derivado a organismo' : estadoVal === 'resuelta' ? 'Resuelta' : 'Pendiente';
 
     // ¿tiene datos de seguimiento?
     const tieneSeg = !!(d['Asesor seguimiento'] || d['comentarios seguimiento'] || d['Respuesta Consultante']);
 
     // Valores actuales de seguimiento para pre-rellenar el formulario
+    const vAsesorOriginal = esc(d.Asesor || '');
     const vAsesorSeg   = esc(d['Asesor seguimiento'] || '');
     const vComentarios = esc(d['comentarios seguimiento'] || '');
     const vRespuesta   = esc(d['Respuesta Consultante'] || '');
+    const vContactoOrganismo = esc(d['Contacto Organismo'] || '');
     const vEstado      = estadoVal;
     const vTipo        = d.Tipo || '';
     const vUrgente     = (d.Urgente || '').toString().trim().toLowerCase() === 'sí' || (d.Urgente || '').toString().trim().toLowerCase() === 'si';
@@ -924,6 +934,7 @@ function filtrar() {
     const vCualBenef  = esc(d['Cuál beneficio']||d['Cual beneficio']||'');
     const vDNI        = esc(d.DNI||'');
     const vTel        = esc(d.Telefono||'');
+    const vNacimiento = esc(d['Fecha Nacimiento']||d['Fecha nacimiento']||'');
 
     // Fila de seguimiento (oculta por defecto)
     const filaSeg = `<tr class="seguimiento-row" id="seg-row-${globalIdx}">
@@ -931,7 +942,9 @@ function filtrar() {
         <div class="seg-panel">
           <!-- Datos del consultante -->
           <div class="seg-datos-consulta">
+            ${vAsesorOriginal ? `<div class="seg-dato-item"><span class="seg-dato-label">Asesor/a que tomó el caso</span><span class="seg-dato-val">${vAsesorOriginal}</span></div>` : ''}
             ${vDNI ? `<div class="seg-dato-item"><span class="seg-dato-label">DNI</span><span class="seg-dato-val">${vDNI}</span></div>` : ''}
+            ${vNacimiento ? `<div class="seg-dato-item"><span class="seg-dato-label">Fecha de nacimiento</span><span class="seg-dato-val">${vNacimiento}</span></div>` : ''}
             ${vTel ? `<div class="seg-dato-item"><span class="seg-dato-label">Teléfono</span><span class="seg-dato-val">${vTel}</span></div>` : ''}
             ${vExtranjero ? `<div class="seg-dato-item"><span class="seg-dato-label">Situación migratoria</span><span class="seg-dato-val">${vExtranjero}</span></div>` : ''}
             ${vJubilado ? `<div class="seg-dato-item"><span class="seg-dato-label">Jubilado/a</span><span class="seg-dato-val">${vJubilado}</span></div>` : ''}
@@ -949,6 +962,7 @@ function filtrar() {
             <select id="seg-estado-${globalIdx}">
               <option value="pendiente"  ${vEstado==='pendiente'  ?'selected':''}>Pendiente</option>
               <option value="en-proceso" ${vEstado==='en-proceso' ?'selected':''}>En proceso</option>
+              <option value="derivado-a-organismo" ${vEstado==='derivado-a-organismo' ?'selected':''}>Derivado a organismo</option>
               <option value="resuelta"   ${vEstado==='resuelta'   ?'selected':''}>Resuelta</option>
             </select>
           </div>
@@ -983,6 +997,10 @@ function filtrar() {
           <div class="seg-group">
             <label>Respuesta al consultante</label>
             <input type="text" id="seg-respuesta-${globalIdx}" value="${vRespuesta}" placeholder="¿Qué se le informó?" />
+          </div>
+          <div class="seg-group">
+            <label>Contacto en el organismo</label>
+            <input type="text" id="seg-contacto-organismo-${globalIdx}" value="${vContactoOrganismo}" placeholder="Nombre del contacto" />
           </div>
           <div class="seg-group wide">
             <label>Historial de seguimiento</label>
@@ -1036,6 +1054,7 @@ async function guardarSeguimiento(globalIdx) {
   const tipo       = document.getElementById(`seg-tipo-${globalIdx}`).value;
   const asesorSeg  = document.getElementById(`seg-asesor-${globalIdx}`).value;
   const respuesta  = document.getElementById(`seg-respuesta-${globalIdx}`).value;
+  const contactoOrganismo = document.getElementById(`seg-contacto-organismo-${globalIdx}`).value;
   const urgente    = document.getElementById(`seg-urgente-${globalIdx}`).checked ? 'Sí' : 'No';
 
   // HISTORIAL ACUMULATIVO: la nueva entrada se agrega al historial existente con fecha
@@ -1065,7 +1084,8 @@ async function guardarSeguimiento(globalIdx) {
     urgente: urgente,
     asesor_seguimiento: asesorSeg,
     observaciones_seguimiento: comentarios,
-    respuesta_consultante: respuesta
+    respuesta_consultante: respuesta,
+    contacto_organismo: contactoOrganismo
   };
 
   try {
@@ -1091,6 +1111,7 @@ async function guardarSeguimiento(globalIdx) {
     todosLosDatos[globalIdx]['Asesor seguimiento'] = asesorSeg;
     todosLosDatos[globalIdx]['comentarios seguimiento'] = comentarios;
     todosLosDatos[globalIdx]['Respuesta Consultante'] = respuesta;
+    todosLosDatos[globalIdx]['Contacto Organismo'] = contactoOrganismo;
     actualizarMetricas(todosLosDatos);
     msg.textContent = '✓ Guardado';
     msg.className = 'seg-msg';
@@ -1150,7 +1171,7 @@ function renderStats() {
 
   const estados = contarPor('Estado');
   const total   = todosLosDatos.length;
-  const estadoColores = { 'pendiente': '#F4B915', 'en-proceso': '#1B8FA6', 'resuelta': '#1E9E6A' };
+  const estadoColores = { 'pendiente': '#F4B915', 'en-proceso': '#1B8FA6', 'derivado-a-organismo': '#339CFF', 'resuelta': '#1E9E6A' };
   const canvas = document.getElementById('donut-canvas');
   const ctx = canvas.getContext('2d');
   ctx.clearRect(0,0,140,140);
@@ -1217,12 +1238,15 @@ function renderFicheroTabla(rows) {
   vacio.style.display = 'none';
   document.getElementById('fichero-tabla').style.display = 'table';
 
+  // Nota: la fuente "PAAV" llega así desde el .gs (no se tocó el backend);
+  // acá la traducimos a "PAAD" solo para mostrarla, sin tocar la lógica de cruce.
   const coloresFuente = { 'PAAV':'paav', 'PJ Mugica':'pj', 'Asesorías':'juridicas', 'Progresar':'progresar' };
+  const etiquetaFuente = (s) => s === 'PAAV' ? 'PAAD' : s;
 
   tbody.innerHTML = rows.map(v => {
     const badges = v.padrones.split(', ').map(p => {
       const cls = coloresFuente[p.trim()] || '';
-      return `<span class="vecino-badge ${cls}" style="font-size:10px;padding:2px 7px">${esc(p.trim())}</span>`;
+      return `<span class="vecino-badge ${cls}" style="font-size:10px;padding:2px 7px">${esc(etiquetaFuente(p.trim()))}</span>`;
     }).join(' ');
     return `<tr class="main-row" onclick="buscarPorDNIDirecto('${esc(v.dni)}')">
       <td style="font-weight:600">${esc(v.dni)}</td>
@@ -1321,7 +1345,7 @@ function renderVecino(data, dni) {
   document.getElementById('ficha-dni').textContent = 'DNI ' + dni;
 
   const colores = { paav:'var(--rojo)', juridicas:'var(--teal)', pj:'var(--amarillo)', progresar:'var(--verde)' };
-  const etiquetas = { paav:'PAAV', juridicas:'Asesorías', pj:'PJ Mugica', progresar:'Progresar' };
+  const etiquetas = { paav:'PAAD', juridicas:'Asesorías', pj:'PJ Mugica', progresar:'Progresar' };
   const clases = { paav:'paav', juridicas:'juridicas', pj:'pj', progresar:'progresar' };
   document.getElementById('ficha-badges').innerHTML = fuentesConResultados
     .map(f => `<span class="vecino-badge ${clases[f]}">${etiquetas[f]}</span>`).join('');
@@ -1421,6 +1445,7 @@ function exportarCasoXLS(globalIdx) {
     ['Nombre',                 d.Nombre || ''],
     ['Apellido',               d.Apellido || ''],
     ['DNI',                    d.DNI || ''],
+    ['Fecha de nacimiento',    d['Fecha Nacimiento'] || d['Fecha nacimiento'] || ''],
     ['Teléfono',               d.Telefono || ''],
     ['Domicilio',              d.Domicilio || ''],
     ['Tipo de consulta',       d.Tipo || ''],
@@ -1434,6 +1459,7 @@ function exportarCasoXLS(globalIdx) {
     ['Asesor seguimiento',     d['Asesor seguimiento'] || ''],
     ['Comentarios seguimiento',d['comentarios seguimiento'] || ''],
     ['Respuesta consultante',  d['Respuesta Consultante'] || ''],
+    ['Contacto en el organismo', d['Contacto Organismo'] || ''],
     ['Urgente',                d.Urgente || 'No'],
   ];
 
